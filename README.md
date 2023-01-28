@@ -1,10 +1,5 @@
 # Hi, I'm Mioc AI!
 
-# Are we doing this or what?
-TODO
-
-## Prerequisites
-To set the initial state of the project just run `forge init`. This will install prerequisites and build the project.
-
-## Get ready to rumble!
-To start playing, just run `forge run`.
+# How to set up?
+1. Clone the repository into your Mindsmiths IDE
+2. In the terminal, run `forge init`
