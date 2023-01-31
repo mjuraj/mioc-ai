@@ -69,6 +69,8 @@ services:
       cpu: 500m
       memory: 650Mi
 
+    dependencies:
+      - armory
   heartbeat:
     package: heartbeat
     type: python
@@ -83,3 +85,25 @@ services:
       cpu: 69m
       memory: 65Mi
 
+  armory:
+    type: django
+    version: 5.1.1
+    command:
+      run: "daphne -b 0.0.0.0 armory.config.asgi:application"
+    db:
+      mongo: true
+      postgres: true
+    dependencies:
+      - channels==3.0.5
+      - channels-redis==3.4.1
+      - django==3.2.16
+      - daphne==3.0.2
+      - django-environ==0.8.1
+      - gunicorn==20.1.0
+      - websockets==10.4
+    env:
+      SITE_URL: '{{ "armory." + env.get("HOST_DOMAIN", "") }}'
+      INTERNAL_SITE_URL: "armory"
+    resources:
+      cpu: 50m
+      memory: 75Mi

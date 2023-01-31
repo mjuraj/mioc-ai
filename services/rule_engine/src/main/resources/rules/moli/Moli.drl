@@ -1,0 +1,17 @@
+package rules.moli;
+
+import agents.Moli;
+
+import com.mindsmiths.ruleEngine.model.Heartbeat
+import com.mindsmiths.armory.event.UserConnected
+import com.mindsmiths.armory.event.Submit
+import com.mindsmiths.ruleEngine.util.Log
+
+rule "Hello world"
+    when
+        signal: UserConnected() from entry-point "signals"
+        agent: Moli()
+    then
+        agent.showHelloScreen();
+        delete(signal);
+end
