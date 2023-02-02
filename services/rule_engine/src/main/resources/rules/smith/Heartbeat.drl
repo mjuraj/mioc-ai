@@ -1,13 +1,29 @@
 package rules.smith;
 
+import agents.Smith;
+
+
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
 
+import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI
+import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet
 
-rule "Smith's Heartbeat"
+rule "Get Google Sheets"
     when
-        Heartbeat() from entry-point "signals"
+        Heartbeat(now: timestamp) from entry-point "signals"
+        agent: Smith(/*lastTableUpdate == null || lastTableUpdate before[30s] now*/)
     then
-        Log.info("Smith's heartbeat - num agents: " + Agents.getCount());
+        agent.lastTableUpdate = now;
+        GSheetsAdapterAPI.getSpreadsheet();
+end
+
+rule "Process Sheet"
+    when
+        spreadsheet: Spreadsheet() from entry-point "signals"
+        agent: Smith()
+    then
+        agent.processSheet(spreadsheet);
+        delete(spreadsheet);
 end
