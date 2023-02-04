@@ -15,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Smith extends Agent {
 
-    public LocalDateTime lastTableUpdate = null;
+    LocalDateTime lastTableUpdate = null;
 
     public Smith() {
         this.id = "SMITH";
