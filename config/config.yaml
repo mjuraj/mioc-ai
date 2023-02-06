@@ -60,7 +60,6 @@ global:
   repository: nexus.vingd.net
 
 services:
-
   rule-engine:
     type: java
     db:
@@ -68,9 +67,9 @@ services:
     resources:
       cpu: 500m
       memory: 650Mi
-
     dependencies:
       - armory
+
   heartbeat:
     package: heartbeat
     type: python
@@ -107,3 +106,15 @@ services:
     resources:
       cpu: 50m
       memory: 75Mi
+
+  gsheets-adapter:
+    type: python
+    version: 1.0.1
+    db:
+      mongo: true
+    env:
+      GOOGLE_CLIENT_CREDENTIALS: '{{ env.GOOGLE_CLIENT_CREDENTIALS }}'
+      GOOGLE_SPREADSHEET_ID: "{{ env.GOOGLE_SPREADSHEET_ID }}"
+    resources:
+      cpu: 50m
+      memory: 100Mi
