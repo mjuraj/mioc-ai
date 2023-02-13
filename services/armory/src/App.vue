@@ -1,5 +1,6 @@
 <script>
 import Armory from "armory-sdk/src/Armory";
+import Slider from "./components/Slider.vue";
 
 export default {
   name: "App",
@@ -9,7 +10,9 @@ export default {
       return {};
     },
     getCustomComponents() {
-      return {};
+      return {
+        Slider,
+      };
     },
   },
 };

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "armory-sdk": "^5.1.3"
+  }
+}
