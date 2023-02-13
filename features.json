@@ -1,0 +1,16 @@
+{
+    "features": [
+        {
+            "name": "SendingEmails",
+            "description": "Is sending emails activated",
+            "enabled": true,
+            "strategies": [
+                {
+                    "name": "default"
+                }
+            ],
+            "variants": null,
+            "createdAt": "2022-07-19T08:44:03.145Z"
+        }
+    ]
+}

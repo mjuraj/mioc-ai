@@ -69,6 +69,7 @@ services:
       memory: 650Mi
     dependencies:
       - armory
+      - email-adapter
 
   heartbeat:
     package: heartbeat
@@ -103,6 +104,25 @@ services:
     env:
       SITE_URL: '{{ "armory." + env.get("HOST_DOMAIN", "") }}'
       INTERNAL_SITE_URL: "armory"
+    resources:
+      cpu: 50m
+      memory: 75Mi
+
+  email-adapter:
+    type: python
+    version: 5.0.2
+    env:
+      PROJECT_EMAIL_NAME: '{{ env.PROJECT_EMAIL_NAME }}'
+      PROJECT_EMAIL_ADDRESS: '{{ env.PROJECT_EMAIL_ADDRESS }}'
+      PROJECT_EMAIL_PASSWORD: '{{ env.PROJECT_EMAIL_PASSWORD }}'
+      SMTP_SERVER: smtp.gmail.com
+      SMTP_PORT: 587
+      IMAP_SERVER: imap.gmail.com
+      IMAP_PORT: 993
+      SMTP_USERNAME: '{{ env.SMTP_USERNAME }}'
+      SMTP_PASSWORD: '{{ env.SMTP_PASSWORD }}'
+    db:
+      mongo: true
     resources:
       cpu: 50m
       memory: 75Mi

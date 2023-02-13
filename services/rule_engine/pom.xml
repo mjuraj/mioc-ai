@@ -43,6 +43,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.mindsmiths</groupId>
+			<artifactId>email-adapter-client</artifactId>
+			<version>5.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mindsmiths</groupId>
 			<artifactId>gsheets-adapter-client</artifactId>
 			<version>1.0.1</version>
 		</dependency>
