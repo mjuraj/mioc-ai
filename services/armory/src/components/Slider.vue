@@ -16,7 +16,7 @@ export default {
     },
   },
   mounted: function () {
-    const initialValue = this.slideValue || 1;
+    const initialValue = this.slideValue || 5;
 
     this.$store.commit("setInputValue", {
       inputId: this.inputId,
@@ -36,7 +36,7 @@ export default {
       get() {
         return this.$store.state.inputs[this.inputId]
           ? this.$store.state.inputs[this.inputId].value
-          : 1;
+          : 5;
       },
       set(value) {
         this.$store.commit("setInputValue", {
