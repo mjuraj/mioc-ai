@@ -1,5 +1,5 @@
 <template>
-  <b-field label="Simple">
+  <b-field>
     <b-slider v-model="slideValue" :min="1" :max="10" ticks></b-slider>
   </b-field>
 </template>
