@@ -28,9 +28,9 @@ public class Moli extends Agent {
 
     // Agent id
     // Setting the agents connection
-    public Moli(String id){
-        this.id = id;
-        setConnection("email", id);
+    public Moli(String email){
+        this.id = email;
+        setConnection("email", email);
     }
 
     public void showHelloScreen() {
