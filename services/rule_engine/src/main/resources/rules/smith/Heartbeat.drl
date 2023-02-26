@@ -1,7 +1,7 @@
 package rules.smith;
 
 import agents.Smith;
-
+import signals.AddReview;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
@@ -26,6 +26,15 @@ rule "Process Sheet"
         spreadsheet: Spreadsheet() from entry-point "signals"
         agent: Smith()
     then
-        agent.processSheet(spreadsheet);
+        modify(agent) {processSheet(spreadsheet)};
         delete(spreadsheet);
+end
+
+rule "Add Review"
+    when
+        signal: AddReview() from entry-point "signals"
+        agent: Smith()
+    then
+        agent.addReviewToSheet(signal.getEmail(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback());
+        delete(signal);
 end
