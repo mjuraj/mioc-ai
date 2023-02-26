@@ -1,0 +1,15 @@
+package rules.ravnatelj;
+
+import agents.Ravnatelj;
+
+import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.util.Log;
+import com.mindsmiths.ruleEngine.util.Agents;
+
+// rule za slanje maila svaki dan
+
+rule "Send email"
+    when
+        // proslo vrijeme = 24h
+    then
+        agent.sendEmail(List.of(/* ravnateljev mail*/), /* naslov maila */, /* tekst maila */)
