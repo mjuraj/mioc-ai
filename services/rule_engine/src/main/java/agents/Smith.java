@@ -57,7 +57,7 @@ public class Smith extends Agent {
     // TODO: set the function up to work with data collected from armory
     public void getReview(String mail, String grade, String review){
         String range = String.format("Odgovori!A%d:C%d", nextAnsRow, nextAnsRow);
-        List<List<String>> values = List.of(List.of(mail,ocjena,review));
+        List<List<String>> values = List.of(List.of(mail,grade,review));
         GSheetsAdapterAPI.updateSheet(values, range);
     }
 
