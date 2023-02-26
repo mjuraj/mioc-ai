@@ -66,8 +66,7 @@ public class Smith extends Agent {
         List<Map<String, String>> mailList = sheet.getSheets().get("Mailovi");
 
         for (Map<String, String> item : mailList) {
-            for (String key : item.keySet()) {
-                String email = item.get(key);
+            for (String email: item.values()) {
                 if(!Agents.exists(email)){
                     Agents.createAgent(new Moli(email));
                 }
