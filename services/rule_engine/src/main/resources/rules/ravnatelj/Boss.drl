@@ -1,18 +1,17 @@
-package rules.ravnatelj;
+package rules.boss;
 
-import agents.Ravnatelj;
+import agents.Boss;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
 
-// rule za slanje maila svaki dan
 
 rule "Send email"
     when
-        // proslo vrijeme = 24h
+        // passed time = 24h
         Heartbeat(ts: timestamp) from entry-point "signals"
-        agent: Ravnatelj(
+        agent: Boss(
             memory.isEmpty() == false, //je li ova linija bitna?
             lastEmailSentTime before[24h] ts
         )

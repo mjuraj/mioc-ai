@@ -9,10 +9,10 @@ import com.mindsmiths.emailAdapter.EmailAdapterAPI;
 
 import java.time.LocalDateTime;
 
-public class Ravnatelj extends Agent {
-    public static String ID = "RAVNATELJ";
+public class Boss extends Agent {
+    public static String ID = "BOSS";
 
-    public Ravnatelj() {
+    public Boss() {
         id = ID;
     }
 
