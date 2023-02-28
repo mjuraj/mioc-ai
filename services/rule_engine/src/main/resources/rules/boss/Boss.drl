@@ -15,4 +15,4 @@ rule "Send email"
             lastEmailSentTime before[24h] ts
         )
     then
-        agent.sendEmail(List.of('ndmitrovic@mioc.hr'), "Novi odgovori učenika", "Bok, Moli je. Skupila sam odgovore učenika u proteklih 24h i šaljem ti ih u privitku.") // spreadsheet link missing
+        agent.sendEmail(List.of('ndmitrovic@mioc.hr'), "Novi odgovori učenika", "Bok, Moli je. Skupila sam odgovore učenika u proteklih 24h i šaljem ti ih u privitku. https://docs.google.com/spreadsheets/d/1fLIn_xpPIxCBteodfglxNe-hUoPVzJ7rzHabUDZGKpk/edit?usp=sharing")
