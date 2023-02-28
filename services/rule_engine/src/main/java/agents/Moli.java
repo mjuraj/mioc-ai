@@ -25,9 +25,11 @@ import com.mindsmiths.emailAdapter.EmailAdapterAPI;
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class Moli extends Agent {
+    String gender;
+    Integer age;
+    Integer rating;
+    String feedback;
 
-    // Agent id
-    // Setting the agents connection
     public Moli(String email){
         this.id = email;
         setConnection("email", email);
@@ -44,8 +46,8 @@ public class Moli extends Agent {
             new Screen("askForGender")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Jesi li miočanin ili miočanka?")) 
-                .add(new SubmitButton("askForGenderStarted", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForGenderStarted", "Miočanka", "askForAge")),
+                .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
+                .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
             /*new Screen("askForAgem") //postoje m i f verzije stranica sa prilagodenim recenicama s obzirom na spol
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
@@ -63,10 +65,10 @@ public class Moli extends Agent {
             new Screen("askForAge")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
-                .add(new SubmitButton("askForAgeStarted", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForAgeStarted", "Drugi", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted", "Treći", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted", "Četvrti", "askForRating")),
+                .add(new SubmitButton("askForAgeStarted1", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
+                .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
+                .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
+                .add(new SubmitButton("askForAgeStarted4", "Četvrti", "askForRating")),
             /*new Screen("askForRatingm")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Preporučuješ li MIOC?"))
