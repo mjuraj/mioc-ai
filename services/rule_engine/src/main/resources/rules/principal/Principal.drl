@@ -1,6 +1,6 @@
-package rules.boss;
+package rules.principal;
 
-import agents.Boss;
+import agents.Principal;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
@@ -11,7 +11,7 @@ rule "Send email"
     when
         // passed time = 24h
         Heartbeat(ts: timestamp) from entry-point "signals"
-        agent: Boss(
+        agent: Principal(
             lastEmailSentTime before[24h] ts
         )
     then
