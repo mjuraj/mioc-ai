@@ -1,12 +1,12 @@
 package agents;
 
 import com.mindsmiths.ruleEngine.model.Agent;
+
 import lombok.*;
 import com.mindsmiths.ruleEngine.util.Log;
 
 import com.mindsmiths.armory.ArmoryAPI;
 import com.mindsmiths.armory.Screen;
-
 import com.mindsmiths.armory.component.Title;
 import com.mindsmiths.armory.component.Description;
 import com.mindsmiths.armory.component.SubmitButton;
@@ -22,6 +22,7 @@ import com.mindsmiths.emailAdapter.EmailAdapterAPI;
 import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
 import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 
+
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
@@ -33,6 +34,11 @@ public class Moli extends Agent {
     Integer age;
     Integer rating;
     String feedback;
+
+    public Moli(String email){
+        this.id = email;
+        setConnection("email", email);
+    }
 
     public void showHelloScreen() {
         ArmoryAPI.show(
