@@ -1,12 +1,12 @@
 package agents;
 
 import com.mindsmiths.ruleEngine.model.Agent;
+
 import lombok.*;
 import com.mindsmiths.ruleEngine.util.Log;
 
 import com.mindsmiths.armory.ArmoryAPI;
 import com.mindsmiths.armory.Screen;
-
 import com.mindsmiths.armory.component.Title;
 import com.mindsmiths.armory.component.Description;
 import com.mindsmiths.armory.component.SubmitButton;
@@ -20,10 +20,21 @@ import java.util.List;
 import com.mindsmiths.emailAdapter.NewEmail;
 import com.mindsmiths.emailAdapter.EmailAdapterAPI;
 
+
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class Moli extends Agent {
+    String gender;
+    Integer age;
+    Integer rating;
+    String feedback;
+
+    public Moli(String email){
+        this.id = email;
+        setConnection("email", email);
+    }
+
     public void showHelloScreen() {
         ArmoryAPI.show(
             getConnection("armory"),
@@ -35,8 +46,8 @@ public class Moli extends Agent {
             new Screen("askForGender")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Jesi li miočanin ili miočanka?")) 
-                .add(new SubmitButton("askForGenderStarted", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForGenderStarted", "Miočanka", "askForAge")),
+                .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
+                .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
             /*new Screen("askForAgem") //postoje m i f verzije stranica sa prilagodenim recenicama s obzirom na spol
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
@@ -54,10 +65,10 @@ public class Moli extends Agent {
             new Screen("askForAge")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
-                .add(new SubmitButton("askForAgeStarted", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForAgeStarted", "Drugi", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted", "Treći", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted", "Četvrti", "askForRating")),
+                .add(new SubmitButton("askForAgeStarted1", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
+                .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
+                .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
+                .add(new SubmitButton("askForAgeStarted4", "Četvrti", "askForRating")),
             /*new Screen("askForRatingm")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Preporučuješ li MIOC?"))

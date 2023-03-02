@@ -1,6 +1,12 @@
 <template>
   <b-field>
-    <b-slider v-model="slideValue" :min="1" :max="10" ticks></b-slider>
+    <b-slider v-model="slideValue" :min="1" :max="10" ticks>
+      <template v-for="val in [null, 2, 3, 4, 5, 6, 7, 8, 9, null]">
+        <b-slider-tick v-if="val" :value="val" :key="val">{{
+          val
+        }}</b-slider-tick>
+      </template>
+    </b-slider>
   </b-field>
 </template>
 
