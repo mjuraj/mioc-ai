@@ -43,8 +43,8 @@ public class Moli extends Agent {
         simpleGPT3Request(intro);
     }
 
-    public void setResponse(String response) {
-        // is this necessary?
+    public String setResponse(String response) {
+        return response;
     }
 
     public void simpleGPT3Request(String prompt) {
