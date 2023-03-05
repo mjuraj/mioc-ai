@@ -51,6 +51,11 @@
 			<artifactId>gsheets-adapter-client</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.mindsmiths</groupId>
+			<artifactId>gpt3-adapter-client</artifactId>
+			<version>5.0.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>app</finalName>

@@ -20,6 +20,8 @@ import java.util.List;
 import com.mindsmiths.emailAdapter.NewEmail;
 import com.mindsmiths.emailAdapter.EmailAdapterAPI;
 
+import com.mindsmiths.gpt3.GPT3AdapterAPI;
+
 
 @Data
 @ToString(callSuper = true)
@@ -29,10 +31,39 @@ public class Moli extends Agent {
     Integer age;
     Integer rating;
     String feedback;
+    String response;
 
     public Moli(String email){
         this.id = email;
         setConnection("email", email);
+    }
+
+    public void askGPT3() {
+        String intro = String.format("Write me a simple, two sentences long, response in Croatian where you thank a student for finishing the survey.");
+        simpleGPT3Request(intro);
+    }
+
+    public void setResponse(String response) {
+        // is this necessary?
+    }
+
+    public void simpleGPT3Request(String prompt) {
+        Log.info("Prompt for GPT-3:\n" + prompt);
+        GPT3AdapterAPI.complete(
+            prompt, // input prompt
+            "text-davinci-001", // model
+            150, // max tokens
+            0.9, // temperature
+            1.0, // topP
+            1, // N
+            null, // logprobs
+            false, // echo
+            List.of("Human:", "Moli:"), // STOP words
+            0.6, // presence penalty
+            0.0, // frequency penalty
+            1, // best of
+            null // logit bias
+        );
     }
 
     public void showHelloScreen() {
@@ -107,8 +138,8 @@ public class Moli extends Agent {
                 .add(new SubmitButton("askForFeedbackStarted", "Pošalji", "endScreen")),
             new Screen("endScreen")
                 .add(new Header("logo.png", false))
-                .add(new Title("Hvala ti! I tvoje mišljenje je bitno."))
-                .add(new Description("Zajedno ćemo učiniti MIOC boljim <3"))
+                .add(new Title(response))
+                .add(new Description("Ovu zahvalu je generirao ChatGPT")) // TODO: osmisliti bolji description
 
 
         );
