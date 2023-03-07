@@ -111,6 +111,7 @@ rule "Feedback"
         modify(agent) { 
             setFeedback(signal.getParamAsString("feedback"))
         };
+        agent.send("SMITH", new AddReview(agent.getEmail(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback()));
         delete(signal);
 end
 
