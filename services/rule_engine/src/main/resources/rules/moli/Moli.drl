@@ -114,11 +114,11 @@ rule "Feedback"
         delete(signal);
 end
 
-// 
+// User switched to "askForFeedback" screen
 rule "Ask GPT3 response"
     salience 10
     when
-        signal: Submit(buttonId == "askForFeedbackStarted") from entry-point "signals"
+        signal: Submit(buttonId == "askForRatingStarted") from entry-point "signals"
         agent: Moli()
     then
         agent.askGPT3();
@@ -130,6 +130,5 @@ rule "Store response"
         agent: Moli()
     then
         modify(agent) {setResponse(gpt3Result.getBestResponse())};
-        agent.showGPT3Response();
         delete(gpt3Result);
 end

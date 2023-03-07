@@ -39,12 +39,8 @@ public class Moli extends Agent {
     }
 
     public void askGPT3() {
-        String intro = String.format("Write me a simple, two sentences long, response in Croatian where you thank a student for finishing the survey.");
+        String intro = String.format("Write me a simple, one or two sentences long, response in Croatian where you thank a student for finishing the survey. Dont make it too formal.");
         simpleGPT3Request(intro);
-    }
-
-    public String setResponse(String response) {
-        return response;
     }
 
     public void simpleGPT3Request(String prompt) {
@@ -64,6 +60,10 @@ public class Moli extends Agent {
             1, // best of
             null // logit bias
         );
+    }
+
+    public String setResponse(String response) {
+        return response;
     }
 
     public void showHelloScreen() {
@@ -138,8 +138,9 @@ public class Moli extends Agent {
                 .add(new SubmitButton("askForFeedbackStarted", "Pošalji", "endScreen")),
             new Screen("endScreen")
                 .add(new Header("logo.png", false))
-                .add(new Title(response))
-                .add(new Description("Ovu zahvalu je generirao ChatGPT")) // TODO: osmisliti bolji description
+                .add(new Title("Tvoj odgovor je poslan!"))
+                .add(new Description(response))
+                //.add(new Description("Ovu poruku za tebe je generirao gpt3! :)"))
 
 
         );
