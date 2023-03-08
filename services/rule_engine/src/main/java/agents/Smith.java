@@ -16,6 +16,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.List;
+import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
+import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
+
 
 @Data
 @ToString(callSuper = true)
@@ -23,6 +27,7 @@ import lombok.ToString;
 public class Smith extends Agent {
 
     LocalDateTime lastTableUpdate = null;
+    int sheetSize = 0;
     int nextAnsRow = 0;
 
     // Agent id
@@ -30,9 +35,10 @@ public class Smith extends Agent {
         this.id = "SMITH";
     }
 
-    // Getting the sheet as an object and getting the first free row in the spreadsheet
-    public void processSpreadsheet(Spreadsheet spreadsheet){
+    public void processSheet(Spreadsheet spreadsheet) {
+        Log.info(spreadsheet);
         List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
+        sheetSize = answers.size();
         nextAnsRow = answers.size() + 2;
 
         createNewAgents(spreadsheet);
@@ -50,5 +56,11 @@ public class Smith extends Agent {
                 }
             }
         }
+    }
+
+    public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback) {
+        String range = String.format("Odgovori!A%d:E%d", sheetSize+2, sheetSize+2);
+        List<List<String>> values = List.of(List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback));
+        GSheetsAdapterAPI.updateSheet(values, range);
     }
 }
