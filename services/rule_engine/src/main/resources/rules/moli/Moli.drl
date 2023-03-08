@@ -8,6 +8,8 @@ import com.mindsmiths.armory.event.UserConnected
 import com.mindsmiths.armory.event.Submit
 import com.mindsmiths.ruleEngine.util.Log
 
+import com.mindsmiths.gpt3.completion.GPT3Completion
+
 rule "Hello world"
     when
         signal: UserConnected() from entry-point "signals"
@@ -112,4 +114,23 @@ rule "Feedback"
         };
         agent.send("SMITH", new AddReview(agent.getEmail(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback()));
         delete(signal);
+end
+
+// User switched to "askForFeedback" screen
+rule "Ask GPT3 response"
+    salience 10
+    when
+        signal: Submit(buttonId == "askForRatingStarted") from entry-point "signals"
+        agent: Moli()
+    then
+        agent.askGPT3();
+end
+
+rule "Store response"
+    when
+        gpt3Result: GPT3Completion() from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {setResponse(gpt3Result.getBestResponse())};
+        delete(gpt3Result);
 end
