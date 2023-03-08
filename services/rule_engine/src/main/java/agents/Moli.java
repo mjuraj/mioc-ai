@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import com.mindsmiths.emailAdapter.NewEmail;
 import com.mindsmiths.emailAdapter.EmailAdapterAPI;
+import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
+import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 
 import com.mindsmiths.gpt3.GPT3AdapterAPI;
 
@@ -27,6 +29,9 @@ import com.mindsmiths.gpt3.GPT3AdapterAPI;
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class Moli extends Agent {
+
+    String email = "test@gmail.com";
+
     String gender;
     Integer age;
     Integer rating;
