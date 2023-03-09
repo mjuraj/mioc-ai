@@ -1,12 +1,12 @@
 package agents;
 
 import com.mindsmiths.ruleEngine.model.Agent;
+
 import lombok.*;
 import com.mindsmiths.ruleEngine.util.Log;
 
 import com.mindsmiths.armory.ArmoryAPI;
 import com.mindsmiths.armory.Screen;
-
 import com.mindsmiths.armory.component.Title;
 import com.mindsmiths.armory.component.Description;
 import com.mindsmiths.armory.component.SubmitButton;
@@ -19,11 +19,58 @@ import java.io.IOException;
 import java.util.List;
 import com.mindsmiths.emailAdapter.NewEmail;
 import com.mindsmiths.emailAdapter.EmailAdapterAPI;
+import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
+import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
+
+import com.mindsmiths.gpt3.GPT3AdapterAPI;
+
 
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class Moli extends Agent {
+
+    String email = "test@gmail.com";
+
+    String gender;
+    Integer age;
+    Integer rating;
+    String feedback;
+    String response;
+
+    public Moli(String email){
+        this.id = email;
+        setConnection("email", email);
+    }
+
+    public void askGPT3() {
+        String intro = String.format("Write me a simple, one or two sentences long, response in Croatian where you thank a student for finishing the survey. Dont make it too formal.");
+        simpleGPT3Request(intro);
+    }
+
+    public void simpleGPT3Request(String prompt) {
+        Log.info("Prompt for GPT-3:\n" + prompt);
+        GPT3AdapterAPI.complete(
+            prompt, // input prompt
+            "text-davinci-001", // model
+            150, // max tokens
+            0.9, // temperature
+            1.0, // topP
+            1, // N
+            null, // logprobs
+            false, // echo
+            List.of("Human:", "Moli:"), // STOP words
+            0.6, // presence penalty
+            0.0, // frequency penalty
+            1, // best of
+            null // logit bias
+        );
+    }
+
+    public String setResponse(String response) {
+        return response;
+    }
+
     public void showHelloScreen() {
         ArmoryAPI.show(
             getConnection("armory"),
@@ -35,8 +82,8 @@ public class Moli extends Agent {
             new Screen("askForGender")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Jesi li miočanin ili miočanka?")) 
-                .add(new SubmitButton("askForGenderStarted", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForGenderStarted", "Miočanka", "askForAge")),
+                .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
+                .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
             /*new Screen("askForAgem") //postoje m i f verzije stranica sa prilagodenim recenicama s obzirom na spol
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
@@ -54,10 +101,10 @@ public class Moli extends Agent {
             new Screen("askForAge")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
-                .add(new SubmitButton("askForAgeStarted", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForAgeStarted", "Drugi", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted", "Treći", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted", "Četvrti", "askForRating")),
+                .add(new SubmitButton("askForAgeStarted1", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
+                .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
+                .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
+                .add(new SubmitButton("askForAgeStarted4", "Četvrti", "askForRating")),
             /*new Screen("askForRatingm")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Preporučuješ li MIOC?"))
@@ -96,8 +143,8 @@ public class Moli extends Agent {
                 .add(new SubmitButton("askForFeedbackStarted", "Pošalji", "endScreen")),
             new Screen("endScreen")
                 .add(new Header("logo.png", false))
-                .add(new Title("Hvala ti! I tvoje mišljenje je bitno."))
-                .add(new Description("Zajedno ćemo učiniti MIOC boljim <3"))
+                .add(new Title("Tvoj odgovor je poslan!"))
+                .add(new Description(response))
 
 
         );

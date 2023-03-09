@@ -1,11 +1,14 @@
 package rules.moli;
 
 import agents.Moli;
+import signals.AddReview;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat
 import com.mindsmiths.armory.event.UserConnected
 import com.mindsmiths.armory.event.Submit
 import com.mindsmiths.ruleEngine.util.Log
+
+import com.mindsmiths.gpt3.completion.GPT3Completion
 
 rule "Hello world"
     when
@@ -14,4 +17,120 @@ rule "Hello world"
     then
         agent.showHelloScreen();
         delete(signal);
+end
+
+// User clicked on "Miočanin" on screen "askForGender"
+rule "Male gender"
+    when
+        signal: Submit(buttonId == "askForGenderStartedm", screenId == "askForGender") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setGender("M")
+        };
+        delete(signal);
+end
+
+// User clicked on "Miočanka" on screen "askForGender"
+rule "Female gender"
+    when
+        signal: Submit(buttonId == "askForGenderStartedf", screenId == "askForGender") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setGender("F")
+        };
+        delete(signal);
+end
+
+// User clicked on "Prvi" on screen "askForAge"
+rule "1st year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted1", screenId == "askForAge") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setAge(1)
+        };
+        delete(signal);
+end
+
+// User clicked on "Drugi" on screen "askForAge"
+rule "2nd year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted2", screenId == "askForAge") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setAge(2)
+        };
+        delete(signal);
+end
+
+// User clicked on "Treći" on screen "askForAge"
+rule "3rd year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted3", screenId == "askForAge") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setAge(3)
+        };
+        delete(signal);
+end
+
+// User clicked on "Četvrti" on screen "askForAge"
+rule "4th year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted4", screenId == "askForAge") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setAge(4)
+        };
+        delete(signal);
+end
+
+// User selected rating on screen "askForRating"
+rule "Rating"
+    when
+        signal: Submit(screenId == "askForRating") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {
+            setRating((Integer) signal.getParam("nps"))
+        };
+        delete(signal)
+end
+
+// User inputted feedback on screen "askForFeedback"
+rule "Feedback"
+    when
+        signal: Submit(textareaInput: getParamAsString("feedback"), screenId == "askForFeedback") from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) { 
+            setFeedback(signal.getParamAsString("feedback"))
+        };
+        agent.send("SMITH", new AddReview(agent.getEmail(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback()));
+        delete(signal);
+end
+
+// User switched to "askForFeedback" screen
+rule "Ask GPT3 response"
+    salience 10
+    when
+        signal: Submit(buttonId == "askForRatingStarted") from entry-point "signals"
+        agent: Moli()
+    then
+        agent.askGPT3();
+end
+
+rule "Store response"
+    when
+        gpt3Result: GPT3Completion() from entry-point "signals"
+        agent: Moli()
+    then
+        modify(agent) {setResponse(gpt3Result.getBestResponse())};
+        delete(gpt3Result);
 end

@@ -1,7 +1,7 @@
 package rules.smith;
 
 import agents.Smith;
-
+import signals.AddReview;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
@@ -10,10 +10,11 @@ import com.mindsmiths.ruleEngine.util.Agents;
 import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI
 import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet
 
+// Connecting to google spreadsheet
 rule "Get Google Sheets"
     when
         Heartbeat(now: timestamp) from entry-point "signals"
-        agent: Smith(/*lastTableUpdate == null || lastTableUpdate before[30s] now*/)
+        agent: Smith(lastTableUpdate == null || lastTableUpdate before[30s] now)
     then
         modify(agent){
             setLastTableUpdate(now)
@@ -21,11 +22,21 @@ rule "Get Google Sheets"
         GSheetsAdapterAPI.getSpreadsheet();
 end
 
+// Rule for processing the sheet
 rule "Process Sheet"
     when
         spreadsheet: Spreadsheet() from entry-point "signals"
         agent: Smith()
     then
-        agent.processSheet(spreadsheet);
+        agent.processSpreadsheet(spreadsheet);
         delete(spreadsheet);
+end
+
+rule "Add Review"
+    when
+        signal: AddReview() from entry-point "signals"
+        agent: Smith()
+    then
+        agent.addReviewToSheet(signal.getEmail(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback());
+        delete(signal);
 end
