@@ -8,3 +8,19 @@ $family-primary: "Helvetica", sans-serif;
 
 @import "armory-sdk/src/assets/css/override.scss";
 @import "armory-sdk/src/assets/css/default-skin.scss";
+
+button {
+    background-color: #286DAC !important;
+}
+
+h2.title {
+    text-align: center !important;
+}
+
+div.Description > div {
+    text-align: center;
+}
+
+.b-slider.is-primary .b-slider-fill {
+    background: #286DAC !important;
+}
