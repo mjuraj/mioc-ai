@@ -1,19 +1,30 @@
 package rules.moli;
 
-import agents.Moli;
-import signals.AddReview;
+import java.util.List;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat
 import com.mindsmiths.armory.event.UserConnected
 import com.mindsmiths.armory.event.Submit
 import com.mindsmiths.ruleEngine.util.Log
-
+import com.mindsmiths.ruleEngine.model.Initialize
 import com.mindsmiths.gpt3.completion.GPT3Completion
+
+import agents.Moli;
+import signals.AddReview;
+
+
+rule "Send initial email"
+    when
+        Initialize() from entry-point "signals"
+        agent: Moli()
+    then
+        agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
+ end
 
 rule "Hello world"
     when
         signal: UserConnected() from entry-point "signals"
-        agent: Moli()
+        agent: Moli(response != null, response != "")
     then
         agent.showHelloScreen();
         delete(signal);
@@ -109,10 +120,14 @@ rule "Feedback"
         signal: Submit(textareaInput: getParamAsString("feedback"), screenId == "askForFeedback") from entry-point "signals"
         agent: Moli()
     then
+        String feedback = signal.getParamAsString("feedback");
+        if(feedback == null)
+            feedback = "";
+            
         modify(agent) { 
-            setFeedback(signal.getParamAsString("feedback"))
+            setFeedback(feedback)
         };
-        agent.send("SMITH", new AddReview(agent.getEmail(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback()));
+        agent.send("SMITH", new AddReview(agent.getConnection("email"), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback()));
         delete(signal);
 end
 
@@ -120,9 +135,9 @@ end
 rule "Ask GPT3 response"
     salience 10
     when
-        signal: Submit(buttonId == "askForRatingStarted") from entry-point "signals"
-        agent: Moli()
+        agent: Moli(response == null)
     then
+        modify(agent) { setResponse("") };
         agent.askGPT3();
 end
 

@@ -13,7 +13,9 @@ import com.mindsmiths.armory.component.SubmitButton;
 import com.mindsmiths.armory.component.Header;
 import com.mindsmiths.armory.component.Input;
 import com.mindsmiths.armory.component.TextArea;
+import com.mindsmiths.armory.component.Image;
 import com.mindsmiths.armory.component.CustomComponent;
+import com.mindsmiths.sdk.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,23 +26,41 @@ import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 
 import com.mindsmiths.gpt3.GPT3AdapterAPI;
 
+import config.Settings;
+
 
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class Moli extends Agent {
-
-    String email = "test@gmail.com";
-
     String gender;
     Integer age;
     Integer rating;
     String feedback;
     String response;
 
+    public String getArmoryUrl() {
+        return Settings.ARMORY_SITE_URL + "/" + getConnection("armory");
+    }
+
+    public String getIntroEmailText() {
+        return "Bok, \n"
+        + "ja sam Moli, miočanski AI asistent. \n" 
+        + "Danas provodim jednu malu anketu o Miocu i puno bi mi značila tvoja pomoć."
+        + "Neće ti uzeti puno vremena, ali meni će puno pomoći da vidim kako poboljšati Mioc. "
+        + "Plus, pomoći ćeš i sebi i svojim kolegama!\n\n"
+        + "Sve što za sad moraš učiniti je kliknuti na link koji vodi na anketu "
+        + "i ja ću te provesti kroz proces. Možeš ju ispuniti kad god želiš, "
+        + "tvoje mi je mišljenje jako bitno.\n\n"
+        + getArmoryUrl() + "\n\n"
+        + "Hvala ti na vremenu, \n"
+        + "Moli";
+    }
+
     public Moli(String email){
         this.id = email;
         setConnection("email", email);
+        setConnection("armory", Utils.randomString());
     }
 
     public void askGPT3() {
@@ -67,93 +87,82 @@ public class Moli extends Agent {
         );
     }
 
-    public String setResponse(String response) {
-        return response;
-    }
-
     public void showHelloScreen() {
         ArmoryAPI.show(
             getConnection("armory"),
             new Screen("Welcome")
-                .add(new Header("logo.png", false))
-                .add(new Title("Bok, ja sam Moli! Može anketa?"))
-                .add(new Description("Hvala ti puno što mi pomažeš <3"))
+                .add(new Header("sovica.png", false))
+                .add(new Title("Prvo kratko upoznavanje, a onda želim čuti tvoje mišljenje ;)"))
+                // .add(new Description("Hvala ti puno što mi pomažeš <3"))
                 .add(new SubmitButton("welcomeStarted", "Idemo!", "askForGender")),
             new Screen("askForGender")
-                .add(new Header("logo.png", true)) 
+                .add(new Header("sovica.png", true)) 
                 .add(new Title("Jesi li miočanin ili miočanka?")) 
                 .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
                 .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
             /*new Screen("askForAgem") //postoje m i f verzije stranica sa prilagodenim recenicama s obzirom na spol
-                .add(new Header("logo.png", true)) 
+                .add(new Header("sovica.png", true)) 
                 .add(new Title("Koji si razred?"))
                 .add(new SubmitButton("askForAgemStarted", "Prvi", "askForRatingm")) //uhvati podatke i salji Ravnatelj agentu
                 .add(new SubmitButton("askForAgemStarted", "Drugi", "askForRatingm"))
                 .add(new SubmitButton("askForAgemStarted", "Treći", "askForRatingm"))
                 .add(new SubmitButton("askForAgemStarted", "Četvrti", "askForRatingm")),*/
             /*new Screen("askForAgef")
-                .add(new Header("logo.png", true)) 
+                .add(new Header("sovica.png", true)) 
                 .add(new Title("Koji si razred?"))
                 .add(new SubmitButton("askForAgefStarted", "Prvi", "askForRatingf")) //uhvati podatke i salji Ravnatelj agentu
                 .add(new SubmitButton("askForAgefStarted", "Drugi", "askForRatingf"))
                 .add(new SubmitButton("askForAgefStarted", "Treći", "askForRatingf"))
                 .add(new SubmitButton("askForAgefStarted", "Četvrti", "askForRatingf")),*/
             new Screen("askForAge")
-                .add(new Header("logo.png", true)) 
+                .add(new Header("sovica.png", true)) 
                 .add(new Title("Koji si razred?"))
                 .add(new SubmitButton("askForAgeStarted1", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
                 .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
                 .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
                 .add(new SubmitButton("askForAgeStarted4", "Četvrti", "askForRating")),
             /*new Screen("askForRatingm")
-                .add(new Header("logo.png", true)) 
+                .add(new Header("sovica.png", true)) 
                 .add(new Title("Preporučuješ li MIOC?"))
                 .add(new Description("Kolika je vjerojatnost da bi preporučio MIOC frendu/frendici?"))
                 .add(new CustomComponent("Slider").addParam("inputId", "nps"))
                 .add(new SubmitButton("askForRatingmStarted", "Idemo!", "askForFeedbackm")), //dodaj slider
             new Screen("askForRatingf")
-                .add(new Header("logo.png", true)) 
+                .add(new Header("sovica.png", true)) 
                 .add(new Title("Preporučuješ li MIOC?"))
                 .add(new Description("Kolika je vjerojatnost da bi preporučila MIOC frendu/frendici?"))
                 .add(new CustomComponent("Slider").addParam("inputId", "nps"))
                 .add(new SubmitButton("askForRatingfStarted", "Idemo!", "askForFeedbackf")), //dodaj slider*/
             new Screen("askForRating")
-                .add(new Header("logo.png", true)) 
-                .add(new Title("Preporučuješ li MIOC?"))
-                .add(new Description("Kolika je vjerojatnost da bi preporučio MIOC frendu/frendici?"))
+                .add(new Header("sovica.png", true)) 
+                .add(new Title("Kolika je vjerojatnost da bi preporučio MIOC frendu ili frendici?"))
+                .add(new Description("Označi odgovor na skali od 0 do 10. 0 znači da ne bi uopće preporučio, a 10 da bi sigurno preporučio."))
                 .add(new CustomComponent("Slider").addParam("inputId", "nps"))
                 .add(new SubmitButton("askForRatingStarted", "Idemo!", "askForFeedback")), //dodaj slider
             /*new Screen("askForFeedbackm")
-                .add(new Header("logo.png", true))
+                .add(new Header("sovica.png", true))
                 .add(new Title("Što bi moglo biti bolje?"))
                 .add(new Description("Napiši koje promjene bi škola morala uvesti da bi joj dao veću ocjenu?"))
                 .add(new TextArea("feedback", "Napiši svoj kometar..."))
                 .add(new SubmitButton("askForFeedbackmStarted", "Pošalji", "endScreen")),
             new Screen("askForFeedbackf")
-                .add(new Header("logo.png", true))
+                .add(new Header("sovica.png", true))
                 .add(new Title("Što bi moglo biti bolje?"))
                 .add(new Description("Napiši koje promjene bi škola morala uvesti da bi joj dala veću ocjenu?"))
                 .add(new TextArea("feedback", "Napiši svoj kometar..."))
                 .add(new SubmitButton("askForFeedbackfStarted", "Pošalji", "endScreen")),*/
             new Screen("askForFeedback")
-                .add(new Header("logo.png", true))
-                .add(new Title("Što bi moglo biti bolje?"))
-                .add(new Description("Napiši koje promjene bi škola morala uvesti da bi joj dao veću ocjenu?"))
+                .add(new Header("sovica.png", true))
+                .add(new Title("Zašto?"))
+                .add(new Description("Slobodno napiši  zašto si se odlučio za tu ocjenu i što možemo učiniti da bi ona bila bolja."))
                 .add(new TextArea("feedback", "Napiši svoj kometar..."))
                 .add(new SubmitButton("askForFeedbackStarted", "Pošalji", "endScreen")),
             new Screen("endScreen")
-                .add(new Header("logo.png", false))
+                .add(new Header("sovica.png", false))
+                .add(new Image("public/srce.png", true))
                 .add(new Title("Tvoj odgovor je poslan!"))
                 .add(new Description(response))
-
-
         );
-        /*try {
-            sendEmail(List.of("marko.zelenovicc@gmail.com"), "Test title", "Test 12345");
-            Log.info("Mail uspjesno poslan!");
-        } catch(IOException ex) {
-            Log.info("Exception! " + ex.toString());
-        }*/
     }
 
     public void sendEmail(List<String> recipients, String emailTitle, String emailText) throws IOException {

@@ -1,10 +1,12 @@
 package rules.principal;
 
-import agents.Principal;
+import java.util.List;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
+
+import agents.Principal;
 
 
 rule "Send email"
@@ -15,4 +17,5 @@ rule "Send email"
             lastEmailSentTime before[24h] ts
         )
     then
-        agent.sendEmail(List.of('ndmitrovic@mioc.hr'), "Novi odgovori učenika", "Bok, Moli je. Skupila sam odgovore učenika u proteklih 24h i šaljem ti ih u privitku. https://docs.google.com/spreadsheets/d/1fLIn_xpPIxCBteodfglxNe-hUoPVzJ7rzHabUDZGKpk/edit?usp=sharing")
+        agent.sendEmail(List.of("ndmitrovic@mioc.hr"), "Novi odgovori učenika", "Bok, Moli je. Skupila sam odgovore učenika u proteklih 24h i šaljem ti ih u privitku. https://docs.google.com/spreadsheets/d/1fLIn_xpPIxCBteodfglxNe-hUoPVzJ7rzHabUDZGKpk/edit?usp=sharing");
+end

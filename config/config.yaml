@@ -45,13 +45,13 @@ global:
 
   backups:
     mongo:
-      enabled: true
+      enabled: false
       cron: 3 5,17 * * *
     postgres:
-      enabled: true
+      enabled: false
       cron: 8 5,17 * * *
     redis:
-      enabled: true
+      enabled: false
       cron: 13 5,17 * * *
 
   cecs:
@@ -70,6 +70,8 @@ services:
     dependencies:
       - armory
       - email-adapter
+    env:
+      ARMORY_SITE_URL: '{{ env.ARMORY_SITE_URL }}'
 
   heartbeat:
     package: heartbeat
