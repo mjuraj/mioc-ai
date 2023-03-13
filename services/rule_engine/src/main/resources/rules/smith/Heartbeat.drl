@@ -28,7 +28,7 @@ rule "Process Sheet"
         spreadsheet: Spreadsheet() from entry-point "signals"
         agent: Smith()
     then
-        agent.processSheet(spreadsheet);
+        agent.processSpreadsheet(spreadsheet);
         delete(spreadsheet);
 end
 

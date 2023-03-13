@@ -1,3 +1,4 @@
+
 package agents;
 
 import java.time.LocalDateTime;
@@ -27,19 +28,21 @@ import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 public class Smith extends Agent {
 
     LocalDateTime lastTableUpdate = null;
+    List<List<String>> sviOdgovori = new ArrayList<List<String>>();
     int sheetSize = 0;
-    int nextAnsRow = 0;
-
+    int nextAnsRow = sviOdgovori.size();
+    
     // Agent id
     public Smith() {
         this.id = "SMITH";
     }
 
-    public void processSheet(Spreadsheet spreadsheet) {
+    public void processSpreadsheet(Spreadsheet spreadsheet) {
         Log.info(spreadsheet);
         List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
+
         sheetSize = answers.size();
-        nextAnsRow = answers.size() + 2;
+        nextAnsRow += answers.size() + 2;
 
         createNewAgents(spreadsheet);
     }
@@ -59,8 +62,10 @@ public class Smith extends Agent {
     }
 
     public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback) {
-        String range = String.format("Odgovori!A%d:E%d", sheetSize+2, sheetSize+2);
-        List<List<String>> values = List.of(List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback));
+        String range = String.format("Odgovori!A%d:E%d", sviOdgovori.size()+2, sviOdgovori.size()+2);
+        List<String> data = List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback);
+        List<List<String>> values = List.of(data);
+        sviOdgovori.add(data);
         GSheetsAdapterAPI.updateSheet(values, range);
     }
 }
