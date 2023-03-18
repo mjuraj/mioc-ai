@@ -11,6 +11,11 @@ $family-primary: "Helvetica", sans-serif;
 
 button {
     background-color: #286DAC !important;
+    transition-duration: 0.4s !important;
+}
+
+button:hover {
+    border-color: rgba(255,255,255,1) !important;
 }
 
 h2.title {
