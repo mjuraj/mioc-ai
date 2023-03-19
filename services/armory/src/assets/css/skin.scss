@@ -32,3 +32,8 @@ div.Description > div {
 .b-slider.is-primary .b-slider-fill {
     background: #286DAC !important;
 }
+
+.b-tooltip.is-primary .tooltip-content {
+    background: #286DAC !important;
+    color: #fff; //TODO: the tip of the pointer on the slider is of wrong color
+  }
