@@ -161,7 +161,7 @@ public class Moli extends Agent {
                 .add(new TextArea("feedback", "Napiši svoj kometar..."))
                 .add(new SubmitButton("askForFeedbackStarted", "Pošalji", "endScreen")),
             new Screen("endScreen")
-                .add(new Image("public/srce.png", true))
+                .add(new Image("public/srce.png", false))
                 .add(new Title("Tvoj odgovor je poslan!"))
                 .add(new Description(response))
         );
