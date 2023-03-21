@@ -6,11 +6,10 @@ $primary: #472183;
 $family-primary: "Helvetica", sans-serif;
 */
 
-@import "armory-sdk/src/assets/css/override.scss";
-@import "armory-sdk/src/assets/css/default-skin.scss";
+$primary: #286DAC;
 
-button {
-    background-color: #286DAC !important;
+.b-slider.is-large .b-slider-tick-label {
+    line-height: 3rem;
 }
 
 h2.title {
@@ -21,6 +20,5 @@ div.Description > div {
     text-align: center;
 }
 
-.b-slider.is-primary .b-slider-fill {
-    background: #286DAC !important;
-}
+@import "armory-sdk/src/assets/css/override.scss";
+@import "armory-sdk/src/assets/css/default-skin.scss";
