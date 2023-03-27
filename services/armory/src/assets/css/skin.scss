@@ -6,8 +6,13 @@ $primary: #472183;
 $family-primary: "Helvetica", sans-serif;
 */
 
+$primary: #286DAC;
 @import "armory-sdk/src/assets/css/override.scss";
 @import "armory-sdk/src/assets/css/default-skin.scss";
+
+.b-slider.is-large .b-slider-tick-label {
+    line-height: 3rem;
+}
 
 button {
     background-color: #286DAC !important;
