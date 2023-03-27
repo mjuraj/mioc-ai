@@ -7,10 +7,24 @@ $family-primary: "Helvetica", sans-serif;
 */
 
 $primary: #286DAC;
+@import "armory-sdk/src/assets/css/override.scss";
+@import "armory-sdk/src/assets/css/default-skin.scss";
 
 .b-slider.is-large .b-slider-tick-label {
     line-height: 3rem;
 }
+
+button {
+    background-color: #286DAC !important;
+    transition-duration: 0.2s !important;
+}
+
+button:hover {
+    border-color: #286DAC !important;
+    background-color: white !important;
+    color: black !important;
+}
+
 
 h2.title {
     text-align: center !important;
@@ -20,5 +34,28 @@ div.Description > div {
     text-align: center;
 }
 
-@import "armory-sdk/src/assets/css/override.scss";
-@import "armory-sdk/src/assets/css/default-skin.scss";
+.b-slider.is-primary .b-slider-fill {
+    background: #286DAC !important;
+}
+
+.b-tooltip.is-primary .tooltip-content {
+    background: #286DAC !important;
+    color: #fff !important;
+}
+
+.b-tooltip.is-top.is-primary .tooltip-content::before {
+    border-top-color: #286DAC !important;
+}
+
+.b-slider .b-slider-tick-label {
+    top: calc(2.25rem + 2px);
+}
+
+
+.b-slider .b-slider-track {
+    height: 3.5rem;
+}
+
+span {
+    font-weight: bold;
+}
