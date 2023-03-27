@@ -35,5 +35,22 @@ div.Description > div {
 
 .b-tooltip.is-primary .tooltip-content {
     background: #286DAC !important;
-    color: #fff; //TODO: the tip of the pointer on the slider is of wrong color
-  }
+    color: #fff !important;
+}
+
+.b-tooltip.is-top.is-primary .tooltip-content::before {
+    border-top-color: #286DAC !important;
+}
+
+.b-slider .b-slider-tick-label {
+    top: calc(2.25rem + 2px);
+}
+
+
+.b-slider .b-slider-track {
+    height: 3.5rem;
+}
+
+span {
+    font-weight: bold;
+}
