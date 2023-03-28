@@ -16,10 +16,7 @@ import com.mindsmiths.ruleEngine.util.Log;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
-
-import java.util.List;
-import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
-import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
+import signals.SummaryReadyMessage;
 
 
 @Data
@@ -31,6 +28,8 @@ public class Smith extends Agent {
     List<List<String>> sviOdgovori = new ArrayList<List<String>>();
     int sheetSize = 0;
     int nextAnsRow = sviOdgovori.size();
+
+    boolean summaryRequested = false;
     
     // Agent id
     public Smith() {
@@ -45,6 +44,42 @@ public class Smith extends Agent {
         nextAnsRow += answers.size() + 2;
 
         createNewAgents(spreadsheet);
+    }
+
+    public void generateSummaryFromData(Spreadsheet spreadsheet) {
+
+
+        List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
+
+        int totalSum = 0;
+        int count = 0;
+
+        int bestScoreIndex = 0;
+        int bestScore = 0;
+        int worstScoreIndex = 0;
+        int worstScore = 11;
+
+        for (Map<String, String> item : answers) {
+            
+            int rating = Integer.parseInt(item.get("Rating"));
+
+            if (rating > bestScore) {
+                bestScoreIndex = count;
+                bestScore = rating;
+            } 
+            if (rating < worstScore) {
+                worstScore = rating;
+                worstScoreIndex = count;
+            }
+
+            totalSum += rating;
+            count++;
+        }
+
+        String bestFeedback = answers.get(bestScoreIndex).get("Feedback");
+        String worstFeedback = answers.get(worstScoreIndex).get("Feedback");
+        int totalAverage = totalSum / count;
+        send("PRINCIPAL", new SummaryReadyMessage(totalAverage, bestFeedback, worstFeedback));
     }
 
     // Going through the list of mails in the spreadsheet and creating agents for mails who don't already have one

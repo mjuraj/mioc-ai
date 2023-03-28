@@ -2,6 +2,7 @@ package rules.smith;
 
 import agents.Smith;
 import signals.AddReview;
+import signals.RequestSummary;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
@@ -22,13 +23,33 @@ rule "Get Google Sheets"
         GSheetsAdapterAPI.getSpreadsheet();
 end
 
+rule "Start processing a summary for Principal"
+    when
+        signal: RequestSummary() from entry-point "signals"
+        agent: Smith(summaryRequested == false)
+    then
+        modify(agent) { setSummaryRequested(true); }
+        GSheetsAdapterAPI.getSpreadsheet();
+        delete(signal);
+end
+
 // Rule for processing the sheet
 rule "Process Sheet"
+    salience 10
     when
         spreadsheet: Spreadsheet() from entry-point "signals"
         agent: Smith()
     then
         agent.processSpreadsheet(spreadsheet);
+end
+
+rule "Make a summary from spreadsheet"
+    when
+        spreadsheet: Spreadsheet() from entry-point "signals"
+        agent: Smith(summaryRequested == true)
+    then
+        modify(agent) { setSummaryRequested(false); }
+        agent.generateSummaryFromData(spreadsheet);
         delete(spreadsheet);
 end
 

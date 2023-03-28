@@ -5,18 +5,42 @@ import java.util.List;
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
+import com.mindsmiths.gpt3.completion.GPT3Completion;
+import signals.SummaryReadyMessage;
+import signals.RequestSummary;
 
 import agents.Principal;
 
 
-rule "Send email"
+rule "Request summary data from database"
     when
         // passed time = 24h
         Heartbeat(ts: timestamp) from entry-point "signals"
         agent: Principal(
-            lastEmailSentTime before[24h] ts
+            lastEmailSentTime before[24h] ts || lastEmailSentTime == null
         )
     then
-        // agent.sendEmail(List.of("ndmitrovic@mioc.hr"), "Novi odgovori učenika", "Bok, Moli je. Skupila sam odgovore učenika u proteklih 24h i šaljem ti ih u privitku. https://docs.google.com/spreadsheets/d/1fLIn_xpPIxCBteodfglxNe-hUoPVzJ7rzHabUDZGKpk/edit?usp=sharing");
-        Log.warn("Not sending mail to principal because it is currently disabled!");
+        modify(agent) { setLastEmailSentTime(ts); }
+        agent.send("SMITH", new RequestSummary());
+end
+
+rule "Summary is ready for GPT processing"
+    when
+        signal: SummaryReadyMessage() from entry-point "signals"
+        agent: Principal(textSummaryBuilding == false)
+    then
+        modify(agent) { setTextSummaryBuilding(true); }
+        agent.requestTextSummary(signal);
+        delete(signal);
+end
+
+rule "Send email when summary text is ready"
+    when
+        gpt3Result: GPT3Completion() from entry-point "signals"
+        agent: Principal(textSummaryBuilding == true)
+    then
+        modify(agent) { setTextSummaryBuilding(false); }
+        String response = gpt3Result.getBestResponse();
+        agent.sendEmail("Novi odgovori učenika", response);
+        delete(gpt3Result);
 end

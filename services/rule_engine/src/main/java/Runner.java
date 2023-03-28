@@ -1,3 +1,4 @@
+import agents.Principal;
 import agents.Smith;
 import com.mindsmiths.ruleEngine.runner.RuleEngineService;
 import com.mindsmiths.ruleEngine.util.Agents;
@@ -13,6 +14,9 @@ public class Runner extends RuleEngineService {
 
         if (!Agents.exists("SMITH"))
             Agents.createAgent(new Smith());
+
+        if (!Agents.exists("PRINCIPAL"))
+            Agents.createAgent(new Principal());
     }
 
     public static void main(String[] args) {

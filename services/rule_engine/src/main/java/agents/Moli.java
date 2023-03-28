@@ -11,7 +11,6 @@ import com.mindsmiths.armory.component.Title;
 import com.mindsmiths.armory.component.Description;
 import com.mindsmiths.armory.component.SubmitButton;
 import com.mindsmiths.armory.component.Header;
-import com.mindsmiths.armory.component.Input;
 import com.mindsmiths.armory.component.TextArea;
 import com.mindsmiths.armory.component.Image;
 import com.mindsmiths.armory.component.CustomComponent;
