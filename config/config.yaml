@@ -72,6 +72,7 @@ services:
       - email-adapter
     env:
       ARMORY_SITE_URL: '{{ env.ARMORY_SITE_URL }}'
+      PRINCIPAL_EMAIL: '{{ env.PRINCIPAL_EMAIL }}'
 
   heartbeat:
     package: heartbeat
