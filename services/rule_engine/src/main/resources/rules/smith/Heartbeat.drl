@@ -3,6 +3,7 @@ package rules.smith;
 import agents.Smith;
 import signals.AddReview;
 import signals.RequestSummary;
+import signals.NewEmailEntry;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
@@ -10,6 +11,8 @@ import com.mindsmiths.ruleEngine.util.Agents;
 
 import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI
 import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet
+
+import java.time.ZoneId;
 
 // Connecting to google spreadsheet
 rule "Get Google Sheets"
@@ -25,10 +28,13 @@ end
 
 rule "Start processing a summary for Principal"
     when
-        signal: RequestSummary() from entry-point "signals"
+        signal: RequestSummary(fromTimestamp: fromTimestamp) from entry-point "signals"
         agent: Smith(summaryRequested == false)
     then
-        modify(agent) { setSummaryRequested(true); }
+        modify(agent) { 
+            setSummaryRequested(true),
+            setSummaryFromTimestamp(fromTimestamp)
+        };
         GSheetsAdapterAPI.getSpreadsheet();
         delete(signal);
 end
@@ -58,6 +64,15 @@ rule "Add Review"
         signal: AddReview() from entry-point "signals"
         agent: Smith()
     then
-        agent.addReviewToSheet(signal.getEmail(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback());
+        agent.addReviewToSheet(signal.getEmail(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback(), signal.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        delete(signal);
+end
+
+rule "Create a new email entry"
+    when
+        signal: NewEmailEntry() from entry-point "signals"
+        agent: Smith()
+    then
+        agent.addNewEmail(signal.getEmail());
         delete(signal);
 end

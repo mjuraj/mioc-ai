@@ -3,6 +3,7 @@ package agents;
 import com.mindsmiths.ruleEngine.model.Agent;
 import com.mindsmiths.ruleEngine.util.Log;
 
+import config.Settings;
 import lombok.Data;
 import lombok.ToString;
 import signals.SummaryReadyMessage;
@@ -28,25 +29,32 @@ public class Principal extends Agent {
 
     public LocalDateTime lastEmailSentTime;
     public boolean textSummaryBuilding = false;
+    public String averageScore = "";
+    public int numberOfEntries = 0;
 
     public void requestTextSummary(SummaryReadyMessage message) {
         DecimalFormat formatter = new DecimalFormat("0.00");
-        String prompt = "You are Moli, an AI agent for schools." +
-            "Write a formal email introduction for 'ravnatelju' in Croatian and introduce yourself. " +
-            "Write a short passage that you have new responses from the last feedback round. " +
-            "Then summarize the following messages: '\n\n" + 
-            "Učenik koji bi vrlo rado preporučio školu prijateljima smatra:\n" +
-            message.getBestFeedback() + 
-            "\n\nUčenik koji ne bi preporučio školu prijateljima smatra:\n" +
-            message.getWorstFeedback() + 
-            "\nProsječna ocjena je " + formatter.format(message.getTotalAverage()) + ".'\n\nAdd a link to spreadsheet for more information 'https://docs.google.com/spreadsheets/d/1Uy6qZWmCqIWt9upKf0yf7VYVTZ6pPFLma_Jn8Dc7NJY/edit?usp=sharing'. Write a formal ending in Croatian.";
+        averageScore = formatter.format(message.getTotalAverage());
+        numberOfEntries = message.getNumberOfEntries();
+
+        if (numberOfEntries == 0) {
+            try {
+                sendNoEntriesEmail();
+            } catch (IOException e) {
+                Log.error(e);
+            }
+            return;
+        }
+
+        String prompt = "Write in formal Croatian, ignore NSFW messages. Write 5 points (up to 10 words per point) in Croatian from the following statements:\n\n"
+            + message.getFeedback();
     
         Log.info("GPT3 prompt for Principal mail: " + prompt);
 
         GPT3AdapterAPI.complete(
             prompt, // input prompt
             "text-davinci-003", // model
-            500, // max tokens
+            3000, // max tokens
             0.9, // temperature
             1.0, // topP
             1, // N
@@ -60,12 +68,32 @@ public class Principal extends Agent {
         );
     }
 
-    public void sendEmail(String emailTitle, String emailText) throws IOException {
+    public void sendNoEntriesEmail() throws IOException {
         NewEmail email = new NewEmail();
-        email.setRecipients(List.of("domagoj.gavranic@gmail.com"));
-        email.setSubject(emailTitle);
-        email.setPlainText(emailText);
+        email.setRecipients(List.of(Settings.PRINCIPAL_EMAIL));
+        email.setSubject("Moli - Novi odgovori učenika");
 
+        String template = Settings.getInstance().PRINCIPAL_SUMMARY_NO_ENTRIES_EMAIL_TEMPLATE;
+        template = template
+            .replaceAll("%SPREADSHEET_URL%", "https://docs.google.com/spreadsheets/d/1Uy6qZWmCqIWt9upKf0yf7VYVTZ6pPFLma_Jn8Dc7NJY/edit?usp=sharing");
+
+        email.setHtmlText(template);
+        EmailAdapterAPI.newEmail(email);
+    }
+
+    public void sendEmail(String summary) throws IOException {
+        NewEmail email = new NewEmail();
+        email.setRecipients(List.of(Settings.PRINCIPAL_EMAIL));
+        email.setSubject("Moli - Novi odgovori učenika");
+
+        String template = Settings.getInstance().PRINCIPAL_SUMMARY_EMAIL_TEMPLATE;
+        template = template
+            .replaceAll("%SPREADSHEET_URL%", "https://docs.google.com/spreadsheets/d/1Uy6qZWmCqIWt9upKf0yf7VYVTZ6pPFLma_Jn8Dc7NJY/edit?usp=sharing")
+            .replaceAll("%FEEDBACK_SUMMARY%", summary)
+            .replaceAll("%NUMBER_OF_ENTRIES%", String.valueOf(numberOfEntries))
+            .replaceAll("%AVERAGE_SCORE%", averageScore);
+
+        email.setHtmlText(template);
         EmailAdapterAPI.newEmail(email);
     }
 }

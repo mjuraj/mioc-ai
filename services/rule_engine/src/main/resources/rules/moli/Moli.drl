@@ -8,20 +8,41 @@ import com.mindsmiths.armory.event.Submit
 import com.mindsmiths.ruleEngine.util.Log
 import com.mindsmiths.ruleEngine.model.Initialize
 import com.mindsmiths.gpt3.completion.GPT3Completion
+import com.mindsmiths.sdk.utils.Utils
 
 import agents.Moli;
 import signals.AddReview;
+import signals.NewEmailEntry;
 
 
 rule "Send initial email"
     when
         Initialize() from entry-point "signals"
-        agent: Moli()
+        agent: Moli(hasConnection("email"))
     then
         agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
- end
+end
 
-rule "Hello world"
+rule "Hello world?"
+    when
+        signal: UserConnected() from entry-point "signals"
+        agent: Moli(!hasConnection("email"))
+    then
+        agent.showOnboardingScreen();
+        delete(signal);
+end
+
+rule "Onboarding email received"
+    when
+        signal: Submit(buttonId == "emailSubmit", screenId == "askForEmail") from entry-point "signals"
+        agent: Moli()
+    then
+        String email = signal.getParamAsString("email");
+        agent.send("SMITH", new NewEmailEntry(email));
+        delete(signal);
+end
+
+rule "Hello kind user"
     when
         signal: UserConnected() from entry-point "signals"
         agent: Moli(response != null, response != "")
@@ -124,10 +145,10 @@ rule "Feedback"
         if(feedback == null)
             feedback = "";
             
-        modify(agent) { 
+        modify(agent) {
             setFeedback(feedback)
         };
-        agent.send("SMITH", new AddReview(agent.getConnection("email"), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback()));
+        agent.send("SMITH", new AddReview(agent.getConnection("email"), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback(), Utils.now()));
         delete(signal);
 end
 
@@ -135,7 +156,7 @@ end
 rule "Ask GPT3 response"
     salience 10
     when
-        agent: Moli(response == null)
+        agent: Moli(response == null, hasConnection("email"))
     then
         modify(agent) { setResponse("") };
         agent.askGPT3();

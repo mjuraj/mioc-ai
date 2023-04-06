@@ -13,6 +13,7 @@ import com.mindsmiths.armory.component.SubmitButton;
 import com.mindsmiths.armory.component.Header;
 import com.mindsmiths.armory.component.TextArea;
 import com.mindsmiths.armory.component.Image;
+import com.mindsmiths.armory.component.Input;
 import com.mindsmiths.armory.component.CustomComponent;
 import com.mindsmiths.sdk.utils.Utils;
 
@@ -20,8 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import com.mindsmiths.emailAdapter.NewEmail;
 import com.mindsmiths.emailAdapter.EmailAdapterAPI;
-import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
-import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 
 import com.mindsmiths.gpt3.GPT3AdapterAPI;
 
@@ -43,17 +42,7 @@ public class Moli extends Agent {
     }
 
     public String getIntroEmailText() {
-        return "Bok, \n"
-        + "ja sam Moli, miočanski AI asistent. \n" 
-        + "Danas provodim jednu malu anketu o Miocu i puno bi mi značila tvoja pomoć."
-        + "Neće ti uzeti puno vremena, ali meni će puno pomoći da vidim kako poboljšati Mioc. "
-        + "Plus, pomoći ćeš i sebi i svojim kolegama!\n\n"
-        + "Sve što za sad moraš učiniti je kliknuti na link koji vodi na anketu "
-        + "i ja ću te provesti kroz proces. Možeš ju ispuniti kad god želiš, "
-        + "tvoje mi je mišljenje jako bitno.\n\n"
-        + getArmoryUrl() + "\n\n"
-        + "Hvala ti na vremenu, \n"
-        + "Moli";
+        return Settings.getInstance().ONBOARDING_EMAIL_TEMPLATE.replace("%ARMORY_URL%", getArmoryUrl());
     }
 
     public Moli(String email){
@@ -83,6 +72,30 @@ public class Moli extends Agent {
             0.0, // frequency penalty
             1, // best of
             null // logit bias
+        );
+    }
+
+    public void showOnboardingScreen() {
+        ArmoryAPI.show(
+            getConnection("armory"), 
+            new Screen("onboardingHello")
+                .add(new Header("logo.png", false))
+                .add(new Image("public/sovica.png", true))
+                .add(new Title("Ja sam Moli!"))
+                .add(new Description("AI asistent po danu, špijun MIOC-a po noći :D"))
+                .add(new Description("Želiš me upoznati? Pridruži mi se!"))
+                .add(new SubmitButton("onboardingStarted", "Idemo!", "askForEmail")),
+            new Screen("askForEmail")
+                .add(new Header("logo.png", false))
+                .add(new Title("Vau! Baš cool!"))
+                .add(new Description("Drago mi je što želiš sudjelovati! Za početak, sve što trebaš je upisati svoj mail kako bih te mogla kontaktirati :)"))
+                .add(new Input("email", "ivo.peric@gmail.com", "email", true))
+                .add(new SubmitButton("emailSubmit", "Idemo!", "onboardingFinished")),
+            new Screen("onboardingFinished")
+                .add(new Header("logo.png", false))
+                .add(new Image("public/sovica.png", true))
+                .add(new Title("Hvala ti :D"))
+                .add(new Description("Uskoro ćeš primiti mail. Hvala ti na pomoći!"))
         );
     }
 
@@ -170,7 +183,7 @@ public class Moli extends Agent {
         NewEmail email = new NewEmail();
         email.setRecipients(recipients);
         email.setSubject(emailTitle);
-        email.setPlainText(emailText);
+        email.setHtmlText(emailText);
 
         EmailAdapterAPI.newEmail(email);
     }

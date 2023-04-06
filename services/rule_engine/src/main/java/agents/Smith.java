@@ -2,7 +2,7 @@
 package agents;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +25,13 @@ import signals.SummaryReadyMessage;
 public class Smith extends Agent {
 
     LocalDateTime lastTableUpdate = null;
-    List<List<String>> sviOdgovori = new ArrayList<List<String>>();
     int sheetSize = 0;
-    int nextAnsRow = sviOdgovori.size();
+    int nextAnsRow = 0;
+    int nextEmailRow = 0;
 
     boolean summaryRequested = false;
+    LocalDateTime summaryFromTimestamp;
+    
     
     // Agent id
     public Smith() {
@@ -41,50 +43,59 @@ public class Smith extends Agent {
         List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
 
         sheetSize = answers.size();
-        nextAnsRow += answers.size() + 2;
-
+        nextAnsRow = answers.size() + 2;
         createNewAgents(spreadsheet);
-    }
+    }   
 
     public void generateSummaryFromData(Spreadsheet spreadsheet) {
-
-
         List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
 
         int totalSum = 0;
         int count = 0;
+        int currentIdx = -1;
 
-        int bestScoreIndex = 0;
+        /*
         int bestScore = 0;
-        int worstScoreIndex = 0;
-        int worstScore = 11;
+        int worstScore = 11;*/
 
+        String feedback = "";
         for (Map<String, String> item : answers) {
-            
+            currentIdx++;
+            long timestamp = Long.parseLong(item.get("Timestamp"));
+            if (summaryFromTimestamp != null && timestamp <= summaryFromTimestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) {
+                continue;
+            }
             int rating = Integer.parseInt(item.get("Rating"));
 
+            /*
             if (rating > bestScore) {
-                bestScoreIndex = count;
                 bestScore = rating;
+                bestScoreIndex = currentIdx;
             } 
             if (rating < worstScore) {
                 worstScore = rating;
-                worstScoreIndex = count;
+                worstScoreIndex = currentIdx;
+            }*/
+            if (feedback.length() < 500) {
+                feedback += item.get("Feedback") + "\n";
             }
 
             totalSum += rating;
             count++;
         }
 
-        String bestFeedback = answers.get(bestScoreIndex).get("Feedback");
-        String worstFeedback = answers.get(worstScoreIndex).get("Feedback");
-        int totalAverage = totalSum / count;
-        send("PRINCIPAL", new SummaryReadyMessage(totalAverage, bestFeedback, worstFeedback));
+        if (count == 0) {
+            send("PRINCIPAL", new SummaryReadyMessage(count, -1, "NO_NEW_FEEDBACK"));
+        } else {
+            int totalAverage = totalSum / count;
+            send("PRINCIPAL", new SummaryReadyMessage(count, totalAverage, feedback));
+        }
     }
 
     // Going through the list of mails in the spreadsheet and creating agents for mails who don't already have one
-    public void createNewAgents(Spreadsheet spreadsheet){
+    public void createNewAgents(Spreadsheet spreadsheet) {
         List<Map<String, String>> mailList = spreadsheet.getSheets().get("Mailovi");
+        nextEmailRow = mailList.size() + 2;
 
         for (Map<String, String> item : mailList) {
             for (String key : item.keySet()) {
@@ -96,11 +107,17 @@ public class Smith extends Agent {
         }
     }
 
-    public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback) {
-        String range = String.format("Odgovori!A%d:E%d", sviOdgovori.size()+2, sviOdgovori.size()+2);
-        List<String> data = List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback);
+    public void addNewEmail(String mail) {
+        String range = String.format("Mailovi!A%d", nextEmailRow, nextEmailRow);
+        List<String> data = List.of(mail);
         List<List<String>> values = List.of(data);
-        sviOdgovori.add(data);
+        GSheetsAdapterAPI.updateSheet(values, range);
+    }
+
+    public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback, Long timestamp) {
+        String range = String.format("Odgovori!A%d:F%d", nextAnsRow, nextAnsRow);
+        List<String> data = List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback, String.valueOf(timestamp));
+        List<List<String>> values = List.of(data);
         GSheetsAdapterAPI.updateSheet(values, range);
     }
 }
