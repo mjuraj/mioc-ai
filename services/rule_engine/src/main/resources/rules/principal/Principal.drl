@@ -4,6 +4,7 @@ import java.util.List;
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
+import com.mindsmiths.sdk.utils.Utils;
 import com.mindsmiths.gpt3.completion.GPT3Completion;
 import config.Settings;
 import utils.CronTime;
@@ -17,8 +18,8 @@ import agents.Principal;
 rule "Request summary data from database"
     when
         // passed time = 24h
-        Heartbeat(ts: timestamp
-                  /*CronTime.isSatisfied("* 0 8 ? * MON *", ts)*/) from entry-point "signals"
+        Heartbeat(ts: timestamp,
+                  CronTime.isSatisfied("* 0 8 ? * MON *", Utils.now())) from entry-point "signals"
         agent: Principal(lastEmailSent: lastEmailSentTime,
             lastEmailSentTime == null || lastEmailSentTime before[24h] ts
         )

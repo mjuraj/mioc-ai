@@ -18,6 +18,7 @@ import com.mindsmiths.armory.component.CustomComponent;
 import com.mindsmiths.sdk.utils.Utils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.mindsmiths.emailAdapter.NewEmail;
 import com.mindsmiths.emailAdapter.EmailAdapterAPI;
@@ -36,6 +37,9 @@ public class Moli extends Agent {
     Integer rating;
     String feedback;
     String response;
+
+    public boolean reminderSent;
+    public LocalDateTime lastSurveyEmailSent;
 
     public String getArmoryUrl() {
         return Settings.ARMORY_SITE_URL + "/" + getConnection("armory");
