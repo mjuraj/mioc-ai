@@ -34,6 +34,7 @@ rule "Summary is ready for GPT processing"
         signal: SummaryReadyMessage() from entry-point "signals"
         agent: Principal(textSummaryBuilding == false)
     then
+        Log.info("Received summary; ready for GPT processing...");
         modify(agent) { setTextSummaryBuilding(true); }
         agent.requestTextSummary(signal);
         delete(signal);

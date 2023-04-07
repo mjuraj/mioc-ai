@@ -32,6 +32,7 @@ rule "Remind user to fill in the survey"
     when
         signal: Heartbeat(ts: timestamp) from entry-point "signals"
         agent: Moli(reminderSent == false,
+                    age == null,
                     lastSurveyEmailSent before[72h] ts)
     then
         modify(agent) { setReminderSent(true) }
