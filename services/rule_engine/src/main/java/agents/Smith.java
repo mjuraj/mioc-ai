@@ -52,30 +52,14 @@ public class Smith extends Agent {
 
         int totalSum = 0;
         int count = 0;
-        int currentIdx = -1;
-
-        /*
-        int bestScore = 0;
-        int worstScore = 11;*/
 
         String feedback = "";
         for (Map<String, String> item : answers) {
-            currentIdx++;
             long timestamp = Long.parseLong(item.get("Timestamp"));
             if (summaryFromTimestamp != null && timestamp <= summaryFromTimestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) {
                 continue;
             }
             int rating = Integer.parseInt(item.get("Rating"));
-
-            /*
-            if (rating > bestScore) {
-                bestScore = rating;
-                bestScoreIndex = currentIdx;
-            } 
-            if (rating < worstScore) {
-                worstScore = rating;
-                worstScoreIndex = currentIdx;
-            }*/
             if (feedback.length() < 500) {
                 feedback += item.get("Feedback") + "\n";
             }
