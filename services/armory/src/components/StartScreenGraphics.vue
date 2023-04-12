@@ -4,10 +4,14 @@
     <img src="/public/mioc.png" width="64px" height="64px" />
     <img src="/public/sovica.png" class="moli-right" />
     <div class="text-headline">Bok!</div>
-    <div class="text-headline2">Ja sam Moli,<br />AI asistent<br />MIOC-a.</div>
+    <div class="text-headline2">
+      Ja sam Moli,<br />
+      miočanski<br />
+      AI asistent.
+    </div>
     <div class="text-description">
-      Ovdje sam da pomognem poboljšati tvoju školu. Od mene ćeš dobivati mail s
-      kratkom anketom svaka tri mjeseca.
+      Od sada, nas smo dvoje tim! <br />
+      Zajedno ćemo tražiti načine kako poboljšati MIOC!
     </div>
   </div>
 </template>

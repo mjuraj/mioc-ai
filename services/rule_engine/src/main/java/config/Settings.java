@@ -9,6 +9,7 @@ public class Settings {
     public static final Map<String, String> env = System.getenv();
     public static String ARMORY_SITE_URL = env.get("ARMORY_SITE_URL");
     public static String PRINCIPAL_EMAIL = env.get("PRINCIPAL_EMAIL");
+    public static String SPREADSHEET_URL = env.get("SPREADSHEET_URL");
     public static String DEFAULT_TIME_ZONE;
     public String ONBOARDING_EMAIL_TEMPLATE = "";
     public String PRINCIPAL_SUMMARY_EMAIL_TEMPLATE = "";

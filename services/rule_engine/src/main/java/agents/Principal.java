@@ -76,7 +76,7 @@ public class Principal extends Agent {
 
         String template = Settings.getInstance().PRINCIPAL_SUMMARY_NO_ENTRIES_EMAIL_TEMPLATE;
         template = template
-            .replaceAll("%SPREADSHEET_URL%", "https://docs.google.com/spreadsheets/d/1Uy6qZWmCqIWt9upKf0yf7VYVTZ6pPFLma_Jn8Dc7NJY/edit?usp=sharing");
+            .replaceAll("%SPREADSHEET_URL%", Settings.SPREADSHEET_URL);
 
         email.setHtmlText(template);
         EmailAdapterAPI.newEmail(email);
@@ -89,7 +89,7 @@ public class Principal extends Agent {
 
         String template = Settings.getInstance().PRINCIPAL_SUMMARY_EMAIL_TEMPLATE;
         template = template
-            .replaceAll("%SPREADSHEET_URL%", "https://docs.google.com/spreadsheets/d/1Uy6qZWmCqIWt9upKf0yf7VYVTZ6pPFLma_Jn8Dc7NJY/edit?usp=sharing")
+            .replaceAll("%SPREADSHEET_URL%", Settings.SPREADSHEET_URL)
             .replaceAll("%FEEDBACK_SUMMARY%", summary)
             .replaceAll("%NUMBER_OF_ENTRIES%", String.valueOf(numberOfEntries))
             .replaceAll("%AVERAGE_SCORE%", averageScore);

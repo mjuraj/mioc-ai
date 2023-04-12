@@ -114,14 +114,9 @@ div.Description > div {
 .moli-right {
     transform: rotate(-15deg);
     position: absolute;
-    right: -190px;
-    top: 0px;
-}
-.moli-bottom {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -160px;
+    right: -150px;
+    top: 32px;
+    height: 300px;
 }
 
 .b-slider .b-slider-tick-label {

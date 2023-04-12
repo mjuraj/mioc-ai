@@ -56,7 +56,7 @@ public class Moli extends Agent {
     }
 
     public void askGPT3() {
-        String intro = String.format("Write me a simple, one or two sentences long, response that must be in Croatian language where you thank a student for finishing the survey. Dont make it too formal.");
+        String intro = String.format("You are Moli. Write me a simple, one or two sentences long, response that must be in Croatian language where you thank a highschool student for finishing the survey. Make it very friendly.");
         simpleGPT3Request(intro);
     }
 
@@ -89,14 +89,14 @@ public class Moli extends Agent {
                 .add(new Header("mioc.png", true))
                 .add(new Title("Upoznajmo se!"))
                 .add(new Image("public/sovica.png", true))
-                .add(new Description("Upiši svoj mail u kućicu i postani dio moje ekipe :)"))
+                .add(new Description("Upiši svoj mail u kućicu i postani dio moje ekipe 😉"))
                 .add(new Input("email", "ivo.peric@gmail.com", "email", true))
                 .add(new SubmitButton("emailSubmit", "Pošalji!", "onboardingFinished")),
             new Screen("onboardingFinished")
                 .add(new CustomComponent("EndScreenGraphics"))
-                .add(new Image("public/srce.png", true))
-                .add(new Title("Hvala ti :D"))
-                .add(new Description("Sad kad smo probili led, spremni smo da učinimo MIOC baš po svojoj mjeri! 😉"))
+                .add(new Image("public/moli_heart.png", true))
+                .add(new Title("Hvala ti!"))
+                .add(new Description("Sad kad smo probili led, spremni smo da učinimo MIOC baš po svojoj mjeri! 🤩"))
         );
     }
 

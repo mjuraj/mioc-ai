@@ -73,6 +73,7 @@ services:
     env:
       ARMORY_SITE_URL: '{{ env.ARMORY_SITE_URL }}'
       PRINCIPAL_EMAIL: '{{ env.PRINCIPAL_EMAIL }}'
+      SPREADSHEET_URL: '{{ env.SPREADSHEET_URL }}'
 
   heartbeat:
     package: heartbeat
