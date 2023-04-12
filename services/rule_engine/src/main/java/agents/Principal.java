@@ -39,6 +39,7 @@ public class Principal extends Agent {
 
         if (numberOfEntries == 0) {
             try {
+                textSummaryBuilding = false;
                 sendNoEntriesEmail();
             } catch (IOException e) {
                 Log.error(e);
