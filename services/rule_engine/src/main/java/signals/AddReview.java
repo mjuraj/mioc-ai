@@ -1,6 +1,6 @@
 package signals;
 
-import com.mindsmiths.ruleEngine.model.Agent;
+import java.time.LocalDateTime;
 import com.mindsmiths.sdk.core.api.Message;
 
 import lombok.*;
@@ -14,4 +14,5 @@ public class AddReview extends Message {
     Integer age;
     Integer rating;
     String feedback;
+    LocalDateTime timestamp;
 }
