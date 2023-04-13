@@ -31,8 +31,8 @@ public class Smith extends Agent {
 
     boolean summaryRequested = false;
     LocalDateTime summaryFromTimestamp;
-    
-    
+
+
     // Agent id
     public Smith() {
         this.id = "SMITH";
@@ -45,16 +45,18 @@ public class Smith extends Agent {
         sheetSize = answers.size();
         nextAnsRow = answers.size() + 2;
         createNewAgents(spreadsheet);
-    }   
+    }
 
     public void generateSummaryFromData(Spreadsheet spreadsheet) {
         List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
 
         int totalSum = 0;
         int count = 0;
+        int currentIdx = -1;
 
         String feedback = "";
         for (Map<String, String> item : answers) {
+            currentIdx++;
             long timestamp = Long.parseLong(item.get("Timestamp"));
             if (summaryFromTimestamp != null && timestamp <= summaryFromTimestamp.atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli()) {
                 continue;
