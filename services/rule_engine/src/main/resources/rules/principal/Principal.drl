@@ -1,14 +1,15 @@
 package rules.principal;
 
 import java.util.List;
+
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
 import com.mindsmiths.sdk.utils.Utils;
 import com.mindsmiths.gpt3.completion.GPT3Completion;
+
 import config.Settings;
 import utils.CronTime;
-
 import signals.SummaryReadyMessage;
 import signals.RequestSummary;
 
