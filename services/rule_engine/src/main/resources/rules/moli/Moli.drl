@@ -43,8 +43,7 @@ end
 rule "Send a new survey email after 3 months"
     when
         signal: Heartbeat(ts: timestamp) from entry-point "signals"
-        agent: Moli(reminderSent == true,
-                    lastSurveyEmailSent before[90d] ts)
+        agent: Moli(lastSurveyEmailSent before[90d] ts)
     then
         agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
         modify(agent) {
