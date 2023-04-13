@@ -12,7 +12,7 @@ import com.mindsmiths.ruleEngine.model.Agent;
 import com.mindsmiths.ruleEngine.util.Agents;
 import com.mindsmiths.ruleEngine.util.Log;
 
-
+import config.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
@@ -31,8 +31,8 @@ public class Smith extends Agent {
 
     boolean summaryRequested = false;
     LocalDateTime summaryFromTimestamp;
-    
-    
+
+
     // Agent id
     public Smith() {
         this.id = "SMITH";
@@ -45,7 +45,7 @@ public class Smith extends Agent {
         sheetSize = answers.size();
         nextAnsRow = answers.size() + 2;
         createNewAgents(spreadsheet);
-    }   
+    }
 
     public void generateSummaryFromData(Spreadsheet spreadsheet) {
         List<Map<String, String>> answers = spreadsheet.getSheets().get("Odgovori");
@@ -56,10 +56,11 @@ public class Smith extends Agent {
         String feedback = "";
         for (Map<String, String> item : answers) {
             long timestamp = Long.parseLong(item.get("Timestamp"));
-            if (summaryFromTimestamp != null && timestamp <= summaryFromTimestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) {
+            if (summaryFromTimestamp != null && timestamp <= summaryFromTimestamp.atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli()) {
                 continue;
             }
             int rating = Integer.parseInt(item.get("Rating"));
+
             if (feedback.length() < 500) {
                 feedback += item.get("Feedback") + "\n";
             }

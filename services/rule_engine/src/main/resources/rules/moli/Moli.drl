@@ -21,7 +21,7 @@ rule "Send initial email"
         agent: Moli(hasConnection("email"), lastSurveyEmailSent == null)
     then
         agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
-        modify(agent) { 
+        modify(agent) {
             setLastSurveyEmailSent(Utils.now()),
             setReminderSent(false)
         }
@@ -47,13 +47,13 @@ rule "Send a new survey email after 3 months"
                     lastSurveyEmailSent before[90d] ts)
     then
         agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
-        modify(agent) { 
+        modify(agent) {
             setLastSurveyEmailSent(Utils.now()),
             setReminderSent(false)
         }
 end
 
-rule "Hello world?"
+rule "Hello world"
     when
         signal: UserConnected() from entry-point "signals"
         agent: Moli(!hasConnection("email"))
