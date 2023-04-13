@@ -56,7 +56,7 @@ public class Moli extends Agent {
     }
 
     public void askGPT3() {
-        String intro = String.format("Write me a simple, one or two sentences long, response that must be in Croatian language where you thank a student for finishing the survey. Dont make it too formal.");
+        String intro = String.format("You are Moli. Write me a simple, one or two sentences long, response that must be in Croatian language where you thank a highschool student for finishing the survey. Make it very friendly.");
         simpleGPT3Request(intro);
     }
 
@@ -83,23 +83,20 @@ public class Moli extends Agent {
         ArmoryAPI.show(
             getConnection("armory"), 
             new Screen("onboardingHello")
-                .add(new Header("logo.png", false))
-                .add(new Image("public/sovica.png", true))
-                .add(new Title("Ja sam Moli!"))
-                .add(new Description("AI asistent po danu, špijun MIOC-a po noći :D"))
-                .add(new Description("Želiš me upoznati? Pridruži mi se!"))
+                .add(new CustomComponent("StartScreenGraphics"))
                 .add(new SubmitButton("onboardingStarted", "Idemo!", "askForEmail")),
             new Screen("askForEmail")
-                .add(new Header("logo.png", false))
-                .add(new Title("Vau! Baš cool!"))
-                .add(new Description("Drago mi je što želiš sudjelovati! Za početak, sve što trebaš je upisati svoj mail kako bih te mogla kontaktirati :)"))
-                .add(new Input("email", "ivo.peric@gmail.com", "email", true))
-                .add(new SubmitButton("emailSubmit", "Idemo!", "onboardingFinished")),
-            new Screen("onboardingFinished")
-                .add(new Header("logo.png", false))
+                .add(new Header("mioc.png", true))
+                .add(new Title("Upoznajmo se!"))
                 .add(new Image("public/sovica.png", true))
-                .add(new Title("Hvala ti :D"))
-                .add(new Description("Uskoro ćeš primiti mail. Hvala ti na pomoći!"))
+                .add(new Description("Upiši svoj mail u kućicu i postani dio moje ekipe 😉"))
+                .add(new Input("email", "ivo.peric@gmail.com", "email", true))
+                .add(new SubmitButton("emailSubmit", "Pošalji!", "onboardingFinished")),
+            new Screen("onboardingFinished")
+                .add(new CustomComponent("EndScreenGraphics"))
+                .add(new Image("public/moli_heart.png", true))
+                .add(new Title("Hvala ti!"))
+                .add(new Description("Sad kad smo probili led, spremni smo da učinimo MIOC baš po svojoj mjeri! 🤩"))
         );
     }
 
@@ -108,9 +105,8 @@ public class Moli extends Agent {
             getConnection("armory"),
             new Screen("Welcome")
                 .add(new Header("logo.png", false))
-                .add(new Title("Prvo kratko upoznavanje, a onda želim čuti tvoje mišljenje ;)"))
                 .add(new Image("public/sovica.png", true))
-                // .add(new Description("Hvala ti puno što mi pomažeš <3"))
+                .add(new Title("Prvo kratko upoznavanje, a onda želim čuti tvoje mišljenje ;)"))
                 .add(new SubmitButton("welcomeStarted", "Idemo!", "askForGender")),
             new Screen("askForGender")
                 .add(new Header("logo.png", true)) 
@@ -118,20 +114,6 @@ public class Moli extends Agent {
                 .add(new Image("public/sovica.png", true))
                 .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
                 .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
-            /*new Screen("askForAgem") //postoje m i f verzije stranica sa prilagodenim recenicama s obzirom na spol
-                .add(new Header("sovica.png", true)) 
-                .add(new Title("Koji si razred?"))
-                .add(new SubmitButton("askForAgemStarted", "Prvi", "askForRatingm")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForAgemStarted", "Drugi", "askForRatingm"))
-                .add(new SubmitButton("askForAgemStarted", "Treći", "askForRatingm"))
-                .add(new SubmitButton("askForAgemStarted", "Četvrti", "askForRatingm")),*/
-            /*new Screen("askForAgef")
-                .add(new Header("sovica.png", true)) 
-                .add(new Title("Koji si razred?"))
-                .add(new SubmitButton("askForAgefStarted", "Prvi", "askForRatingf")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForAgefStarted", "Drugi", "askForRatingf"))
-                .add(new SubmitButton("askForAgefStarted", "Treći", "askForRatingf"))
-                .add(new SubmitButton("askForAgefStarted", "Četvrti", "askForRatingf")),*/
             new Screen("askForAge")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Koji si razred?"))
@@ -140,36 +122,12 @@ public class Moli extends Agent {
                 .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
                 .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
                 .add(new SubmitButton("askForAgeStarted4", "Četvrti", "askForRating")),
-            /*new Screen("askForRatingm")
-                .add(new Header("sovica.png", true)) 
-                .add(new Title("Preporučuješ li MIOC?"))
-                .add(new Description("Kolika je vjerojatnost da bi preporučio MIOC frendu/frendici?"))
-                .add(new CustomComponent("Slider").addParam("inputId", "nps"))
-                .add(new SubmitButton("askForRatingmStarted", "Idemo!", "askForFeedbackm")), //dodaj slider
-            new Screen("askForRatingf")
-                .add(new Header("sovica.png", true)) 
-                .add(new Title("Preporučuješ li MIOC?"))
-                .add(new Description("Kolika je vjerojatnost da bi preporučila MIOC frendu/frendici?"))
-                .add(new CustomComponent("Slider").addParam("inputId", "nps"))
-                .add(new SubmitButton("askForRatingfStarted", "Idemo!", "askForFeedbackf")), //dodaj slider*/
             new Screen("askForRating")
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Kolika je vjerojatnost da bi preporučio MIOC frendu ili frendici?"))
                 .add(new Description("Označi odgovor na skali od 0 do 10. 0 znači da ne bi uopće preporučio, a 10 da bi sigurno preporučio."))
                 .add(new CustomComponent("Slider").addParam("inputId", "nps"))
                 .add(new SubmitButton("askForRatingStarted", "Idemo!", "askForFeedback")), //dodaj slider
-            /*new Screen("askForFeedbackm")
-                .add(new Header("sovica.png", true))
-                .add(new Title("Što bi moglo biti bolje?"))
-                .add(new Description("Napiši koje promjene bi škola morala uvesti da bi joj dao veću ocjenu?"))
-                .add(new TextArea("feedback", "Napiši svoj kometar..."))
-                .add(new SubmitButton("askForFeedbackmStarted", "Pošalji", "endScreen")),
-            new Screen("askForFeedbackf")
-                .add(new Header("sovica.png", true))
-                .add(new Title("Što bi moglo biti bolje?"))
-                .add(new Description("Napiši koje promjene bi škola morala uvesti da bi joj dala veću ocjenu?"))
-                .add(new TextArea("feedback", "Napiši svoj kometar..."))
-                .add(new SubmitButton("askForFeedbackfStarted", "Pošalji", "endScreen")),*/
             new Screen("askForFeedback")
                 .add(new Header("logo.png", true))
                 .add(new Title("Zašto?"))

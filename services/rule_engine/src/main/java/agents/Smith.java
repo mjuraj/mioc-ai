@@ -52,11 +52,9 @@ public class Smith extends Agent {
 
         int totalSum = 0;
         int count = 0;
-        int currentIdx = -1;
 
         String feedback = "";
         for (Map<String, String> item : answers) {
-            currentIdx++;
             long timestamp = Long.parseLong(item.get("Timestamp"));
             if (summaryFromTimestamp != null && timestamp <= summaryFromTimestamp.atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli()) {
                 continue;
