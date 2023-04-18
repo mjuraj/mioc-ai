@@ -36,6 +36,7 @@ public class Runner extends RuleEngineService {
         Log.info("Principal email: " + Settings.PRINCIPAL_EMAIL);
 
         Settings.getInstance().ONBOARDING_EMAIL_TEMPLATE = readFileAsString("templates/onboarding_email.html");
+        Settings.getInstance().NPS_REMINDER_EMAIL_TEMPLATE = readFileAsString("templates/nps_reminder.html");
         Settings.getInstance().PRINCIPAL_SUMMARY_EMAIL_TEMPLATE = readFileAsString("templates/principal_summary.html");
         Settings.getInstance().PRINCIPAL_SUMMARY_NO_ENTRIES_EMAIL_TEMPLATE = readFileAsString("templates/principal_summary_no_new_entries.html");
 

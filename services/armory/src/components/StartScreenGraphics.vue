@@ -9,10 +9,7 @@
       miočanski<br />
       AI asistent.
     </div>
-    <div class="text-description">
-      Od sada, nas smo dvoje tim! <br />
-      Zajedno ćemo tražiti načine kako poboljšati MIOC!
-    </div>
+    <div class="text-description">Tu sam da ti u školi bude 🔝!</div>
   </div>
 </template>
 <script>

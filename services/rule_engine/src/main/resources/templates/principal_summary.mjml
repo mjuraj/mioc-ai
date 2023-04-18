@@ -1,0 +1,46 @@
+<mjml>
+  <mj-body background-color="#efefef">
+    <mj-section full-width="full-width" background-color="white">
+      <mj-column>
+
+        <mj-image width="600px" src="https://i.ibb.co/5kBVxwG/Frame-1-1.png"></mj-image>
+
+        <mj-divider border-color="#286DAC"></mj-divider>
+
+        <mj-text font-size="24px" font-weight="bold" color="#286DAC" font-family="helvetica">Poštovani ravnatelju,</mj-text>
+        <mj-text line-height="28px" font-size="20px" color="gray" font-family="helvetica">
+          šaljem Vam ovotjedne ocjene i prijedloge naših miočana i miočanka.<br /> <br />
+          Primili smo %NUMBER_OF_ENTRIES% novih odgovora. Prosječna ocjena novih odgovora je %AVERAGE_SCORE%, a imamo i prijedloge za poboljšanje ;) <br /> <br />
+          %FEEDBACK_SUMMARY%
+        </mj-text>
+        <mj-text line-height="28px" font-size="20px" color="gray" font-family="helvetica">
+          Ako vas još nešto zanima, klikom na gumb ispod možete saznati više o pohvalama i špotancijama učenika i učenica:
+        </mj-text>
+
+
+        <mj-button background-color="#286DAC" align="center" color="#ffffff" font-size="17px" font-weight="bold" href="%SPREADSHEET_URL%" width="300px">
+          Odgovori učenika
+        </mj-button>
+
+        <mj-text line-height="28px" font-size="20px" color="gray" font-family="helvetica">
+         Hvala Vam što se trudite poboljšati već odličan MIOC!
+        </mj-text>
+        <mj-text line-height="28px" font-size="20px" color="gray" font-family="helvetica">
+         Vaša AI agentica Moli
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-wrapper full-width="full-width">
+      <mj-section>
+        <mj-column>
+          <mj-text color="#445566" font-size="11px" align="center" line-height="16px">
+            XV. gimnazija, Jordanovac 8
+          </mj-text>
+          <mj-text color="#445566" font-size="11px" align="center" line-height="16px">
+            Powered by Mindsmiths
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
