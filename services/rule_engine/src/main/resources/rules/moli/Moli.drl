@@ -20,7 +20,7 @@ rule "Send initial email"
         signal: Initialize() from entry-point "signals"
         agent: Moli(hasConnection("email"), lastSurveyEmailSent == null)
     then
-        agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
+        agent.sendEmail(List.of(agent.getConnection("email")), "Trebam tvoju pomoć! 🦉", agent.getIntroEmailText());
         modify(agent) {
             setLastSurveyEmailSent(Utils.now()),
             setReminderSent(false)
@@ -36,7 +36,7 @@ rule "Remind user to fill in the survey"
                     lastSurveyEmailSent before[72h] ts)
     then
         modify(agent) { setReminderSent(true) }
-        agent.sendEmail(List.of(agent.getConnection("email")), "Ispuni anketu", agent.getIntroEmailText());
+        agent.sendEmail(List.of(agent.getConnection("email")), "Hej, opet ja!", agent.getReminderEmailText());
         delete(signal);
 end
 
@@ -45,7 +45,7 @@ rule "Send a new survey email after 3 months"
         signal: Heartbeat(ts: timestamp) from entry-point "signals"
         agent: Moli(lastSurveyEmailSent before[90d] ts)
     then
-        agent.sendEmail(List.of(agent.getConnection("email")), "Upoznaj Miočanskog AI asistenta", agent.getIntroEmailText());
+        agent.sendEmail(List.of(agent.getConnection("email")), "Trebam tvoju pomoć! 🦉", agent.getIntroEmailText());
         modify(agent) {
             setLastSurveyEmailSent(Utils.now()),
             setReminderSent(false)

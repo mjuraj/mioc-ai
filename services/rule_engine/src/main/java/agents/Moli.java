@@ -49,7 +49,11 @@ public class Moli extends Agent {
         return Settings.getInstance().ONBOARDING_EMAIL_TEMPLATE.replace("%ARMORY_URL%", getArmoryUrl());
     }
 
-    public Moli(String email){
+    public String getReminderEmailText() {
+        return Settings.getInstance().NPS_REMINDER_EMAIL_TEMPLATE.replace("%ARMORY_URL%", getArmoryUrl());
+    }
+
+    public Moli(String email) {
         this.id = email;
         setConnection("email", email);
         setConnection("armory", Utils.randomString());
@@ -96,7 +100,7 @@ public class Moli extends Agent {
                 .add(new CustomComponent("EndScreenGraphics"))
                 .add(new Image("public/moli_heart.png", true))
                 .add(new Title("Hvala ti!"))
-                .add(new Description("Sad kad smo probili led, spremni smo da učinimo MIOC baš po svojoj mjeri! 🤩"))
+                .add(new Description("Sad kad smo probili led, spremni smo da učinimo MIOC baš po tvojoj mjeri! 🤩"))
         );
     }
 

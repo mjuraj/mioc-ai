@@ -12,6 +12,7 @@ public class Settings {
     public static String SPREADSHEET_URL = env.get("SPREADSHEET_URL");
     public static String DEFAULT_TIME_ZONE;
     public String ONBOARDING_EMAIL_TEMPLATE = "";
+    public String NPS_REMINDER_EMAIL_TEMPLATE = "";
     public String PRINCIPAL_SUMMARY_EMAIL_TEMPLATE = "";
     public String PRINCIPAL_SUMMARY_NO_ENTRIES_EMAIL_TEMPLATE = "";
 
