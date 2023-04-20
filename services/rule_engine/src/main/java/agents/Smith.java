@@ -3,6 +3,7 @@ package agents;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,12 +83,22 @@ public class Smith extends Agent {
         List<Map<String, String>> mailList = spreadsheet.getSheets().get("Mailovi");
         nextEmailRow = mailList.size() + 2;
 
+        List<String> mailovi = new ArrayList<String>();
+
         for (Map<String, String> item : mailList) {
             for (String key : item.keySet()) {
                 String email = item.get(key);
                 if(!Agents.exists(email)){
                     Agents.createAgent(new Moli(email));
                 }
+                mailovi.add(email);
+            }
+        }
+
+        List<Moli> agents = Agents.getByType(Moli.class);
+        for (Moli m : agents) {
+            if (!mailovi.contains(m.getId())) {
+                Agents.deleteAgent(m, false);
             }
         }
     }
