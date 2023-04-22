@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat
 import com.mindsmiths.armory.event.UserConnected
+import com.mindsmiths.armory.event.UserDisconnected
 import com.mindsmiths.armory.event.Submit
 import com.mindsmiths.ruleEngine.util.Log
 import com.mindsmiths.ruleEngine.model.Initialize
@@ -13,6 +14,7 @@ import com.mindsmiths.sdk.utils.Utils
 import agents.Moli;
 import signals.AddReview;
 import signals.NewEmailEntry;
+import com.mindsmiths.ruleEngine.util.Agents;
 
 
 rule "Send initial email"
@@ -61,6 +63,15 @@ rule "Hello world"
         delete(signal);
 end
 
+rule "Goodbye world"
+    when
+        signal: UserDisconnected() from entry-point "signals"
+        agent: Moli(!hasConnection("email"))
+    then
+        Agents.deleteAgent(agent, false);
+        Log.info("Successfully deleted agent Moli!");
+end
+
 rule "Onboarding email received"
     when
         signal: Submit(buttonId == "emailSubmit", screenId == "askForEmail") from entry-point "signals"
@@ -69,6 +80,7 @@ rule "Onboarding email received"
         String email = signal.getParamAsString("email");
         agent.send("SMITH", new NewEmailEntry(email));
         delete(signal);
+        Agents.deleteAgent(agent, false);
 end
 
 rule "Hello kind user"
