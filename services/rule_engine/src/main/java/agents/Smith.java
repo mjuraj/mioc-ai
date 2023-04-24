@@ -6,6 +6,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
+import com.mindsmiths.armory.event.UserConnected;
+import com.mindsmiths.armory.event.UserDisconnected;
 import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
 import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 import com.mindsmiths.ruleEngine.model.Agent;
