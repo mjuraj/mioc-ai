@@ -6,8 +6,6 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
-import com.mindsmiths.armory.event.UserConnected;
-import com.mindsmiths.armory.event.UserDisconnected;
 import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
 import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 import com.mindsmiths.ruleEngine.model.Agent;
@@ -99,6 +97,7 @@ public class Smith extends Agent {
         List<String> data = List.of(mail);
         List<List<String>> values = List.of(data);
         GSheetsAdapterAPI.updateSheet(values, range);
+        nextEmailRow++;
     }
 
     public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback, Long timestamp) {
@@ -106,5 +105,6 @@ public class Smith extends Agent {
         List<String> data = List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback, String.valueOf(timestamp));
         List<List<String>> values = List.of(data);
         GSheetsAdapterAPI.updateSheet(values, range);
+        nextAnsRow++;
     }
 }
