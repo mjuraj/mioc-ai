@@ -56,6 +56,11 @@
 			<artifactId>gpt3-adapter-client</artifactId>
 			<version>5.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.mindsmiths</groupId>
+			<artifactId>infobip-adapter-client</artifactId>
+			<version>5.2.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>app</finalName>

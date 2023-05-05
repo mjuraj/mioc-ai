@@ -32,3 +32,8 @@ services:
     port: 8100
     env:
       SITE_URL: '{{ env.CONTROL_PANEL_URL | default("http://localhost:8100", true) }}'
+  infobip-adapter:
+    command:
+      run: "uvicorn infobip_adapter.service:app --port=8001"
+      cwd: "."
+    port: 8001

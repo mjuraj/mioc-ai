@@ -13,3 +13,8 @@ com.mindsmiths.armory.event.UserDisconnected:
     connectionName: armory
     connectionField: connectionId
     agentType: agents.Moli
+com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage:
+  - !GetOrCreateAgentByConnection
+    connectionName: infobip
+    connectionField: from
+    agentType: agents.MoliWapp

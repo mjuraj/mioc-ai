@@ -70,6 +70,7 @@ services:
     dependencies:
       - armory
       - email-adapter
+      - infobip-adapter
     env:
       ARMORY_SITE_URL: '{{ env.ARMORY_SITE_URL }}'
       PRINCIPAL_EMAIL: '{{ env.PRINCIPAL_EMAIL }}'
@@ -171,3 +172,19 @@ services:
     resources:
       cpu: 25m
       memory: 150Mi
+  infobip-adapter:
+    type: python
+    exposed: true
+    version: 5.2.0
+    db:
+      mongo: true
+    command:
+      run: "uvicorn infobip_adapter.service:app"
+      cwd: "."
+    env:
+      INFOBIP_BASE_URL: "{{env.INFOBIP_BASE_URL}}"
+      INFOBIP_API_KEY: "{{env.INFOBIP_API_KEY}}"
+      INFOBIP_PHONE_NUMBER: "{{env.INFOBIP_PHONE_NUMBER}}"
+    resources:
+      cpu: 81m
+      memory: 130Mi

@@ -1,0 +1,22 @@
+package rules.moliWapp;
+
+import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.util.Log;
+
+import agents.MoliWapp;
+
+
+rule "Heartbeat"
+    when
+        Heartbeat() from entry-point "signals"
+    then
+        Log.info("MoliWapp's heartbeat");
+end
+
+rule "Handle message"
+    when
+        signal: InfobipReceivedMessage(message: message) from entry-point "signals"
+    then
+        // What are we expected to do here?
+        
+end
