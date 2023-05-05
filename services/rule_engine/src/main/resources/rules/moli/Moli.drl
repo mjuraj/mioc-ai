@@ -13,7 +13,7 @@ import com.mindsmiths.sdk.utils.Utils
 
 import agents.Moli;
 import signals.AddReview;
-import signals.NewEmailEntry;
+import signals.NewPhoneEntry;
 import com.mindsmiths.ruleEngine.util.Agents;
 
 
@@ -72,13 +72,13 @@ rule "Goodbye world"
         Log.info("Successfully deleted agent Moli!");
 end
 
-rule "Onboarding email received"
+rule "Onboarding phone number received"
     when
-        signal: Submit(buttonId == "emailSubmit", screenId == "askForEmail") from entry-point "signals"
+        signal: Submit(buttonId == "numberSubmit", screenId == "askForWapp") from entry-point "signals"
         agent: Moli()
     then
-        String email = signal.getParamAsString("email");
-        agent.send("SMITH", new NewEmailEntry(email));
+        String phoneNumber = signal.getParamAsString("telephone");
+        agent.send("SMITH", new NewPhoneEntry(phoneNumber));
         delete(signal);
         Agents.deleteAgent(agent, false);
 end

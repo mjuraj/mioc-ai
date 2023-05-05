@@ -88,14 +88,14 @@ public class Moli extends Agent {
             getConnection("armory"), 
             new Screen("onboardingHello")
                 .add(new CustomComponent("StartScreenGraphics"))
-                .add(new SubmitButton("onboardingStarted", "Idemo!", "askForEmail")),
-            new Screen("askForEmail")
+                .add(new SubmitButton("onboardingStarted", "Idemo!", "askForWapp")),
+            new Screen("askForWapp")
                 .add(new Header("mioc.png", true))
                 .add(new Title("Upoznajmo se!"))
                 .add(new Image("public/sovica.png", true))
-                .add(new Description("Upiši svoj mail u kućicu i postani dio moje ekipe 😉"))
-                .add(new Input("email", "ivo.peric@gmail.com", "email", true))
-                .add(new SubmitButton("emailSubmit", "Pošalji!", "onboardingFinished")),
+                .add(new Description("Upiši svoj broj u kućicu i postani dio moje ekipe 😉"))
+                .add(new Input("telephone", "+3850012345678", "tel", true))
+                .add(new SubmitButton("numberSubmit", "Pošalji!", "onboardingFinished")),
             new Screen("onboardingFinished")
                 .add(new CustomComponent("EndScreenGraphics"))
                 .add(new Image("public/moli_heart.png", true))

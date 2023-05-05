@@ -1,16 +1,17 @@
 package rules.moliWapp;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.model.Initialize;
 import com.mindsmiths.ruleEngine.util.Log;
-
+import com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage;
 import agents.MoliWapp;
 
-
-rule "Heartbeat"
+rule "Send initial message"
     when
-        Heartbeat() from entry-point "signals"
+        signal: Initialize() from entry-point "signals"
+        agent: MoliWapp()
     then
-        Log.info("MoliWapp's heartbeat");
+        Log.info("MoliWapp has been initialized.");
 end
 
 rule "Handle message"

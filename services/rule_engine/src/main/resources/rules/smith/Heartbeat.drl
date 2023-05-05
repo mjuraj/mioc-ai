@@ -3,7 +3,7 @@ package rules.smith;
 import agents.Smith;
 import signals.AddReview;
 import signals.RequestSummary;
-import signals.NewEmailEntry;
+import signals.NewPhoneEntry;
 import config.Settings;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
@@ -71,11 +71,11 @@ rule "Add Review"
         delete(signal);
 end
 
-rule "Create a new email entry"
+rule "Create a new phone number entry"
     when
-        signal: NewEmailEntry() from entry-point "signals"
+        signal: NewPhoneEntry() from entry-point "signals"
         agent: Smith()
     then
-        agent.addNewEmail(signal.getEmail());
+        agent.addNewPhoneNumber(signal.getPhone());
         delete(signal);
 end

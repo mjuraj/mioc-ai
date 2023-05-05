@@ -8,4 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 public class MoliWapp extends Agent {
 
+    public MoliWapp(String phone) {
+        this.id = phone;
+        //setConnection("", phone);
+    } 
 }

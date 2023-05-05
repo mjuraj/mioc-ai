@@ -28,6 +28,7 @@ public class Smith extends Agent {
     int sheetSize = 0;
     int nextAnsRow = 0;
     int nextEmailRow = 0;
+    int nextNumberRow = 0;
 
     boolean summaryRequested = false;
     LocalDateTime summaryFromTimestamp;
@@ -77,27 +78,27 @@ public class Smith extends Agent {
         }
     }
 
-    // Going through the list of mails in the spreadsheet and creating agents for mails who don't already have one
+    // Going through the list of phone numbers in the spreadsheet and creating agents for new phone numbers.
     public void createNewAgents(Spreadsheet spreadsheet) {
-        List<Map<String, String>> mailList = spreadsheet.getSheets().get("Mailovi");
-        nextEmailRow = mailList.size() + 2;
+        List<Map<String, String>> numberList = spreadsheet.getSheets().get("Brojevi");
+        nextNumberRow = numberList.size() + 2;
 
-        for (Map<String, String> item : mailList) {
+        for (Map<String, String> item : numberList) {
             for (String key : item.keySet()) {
-                String email = item.get(key);
-                if(!Agents.exists(email)){
-                    Agents.createAgent(new Moli(email));
+                String phone = item.get(key);
+                if(!Agents.exists(phone)) {
+                    Agents.createAgent(new MoliWapp(phone));
                 }
             }
         }
     }
 
-    public void addNewEmail(String mail) {
-        String range = String.format("Mailovi!A%d", nextEmailRow, nextEmailRow);
-        List<String> data = List.of(mail);
+    public void addNewPhoneNumber(String phone) {
+        String range = String.format("Brojevi!A%d", nextNumberRow, nextNumberRow);
+        List<String> data = List.of(phone);
         List<List<String>> values = List.of(data);
         GSheetsAdapterAPI.updateSheet(values, range);
-        nextEmailRow++;
+        nextNumberRow++;
     }
 
     public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback, Long timestamp) {

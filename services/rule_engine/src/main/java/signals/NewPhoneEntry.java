@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewEmailEntry extends Message {
-    String email;
+public class NewPhoneEntry extends Message {
+    String phone;
 }
