@@ -1,3 +1,6 @@
 services:
   armory:
     https: true
+  heartbeat:
+    env:
+      HEARTBEAT_CYCLE: 150
