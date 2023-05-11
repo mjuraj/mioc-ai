@@ -11,7 +11,6 @@ import com.mindsmiths.armory.component.Title;
 import com.mindsmiths.armory.component.Description;
 import com.mindsmiths.armory.component.SubmitButton;
 import com.mindsmiths.armory.component.Header;
-import com.mindsmiths.armory.component.TextArea;
 import com.mindsmiths.armory.component.Image;
 import com.mindsmiths.armory.component.Input;
 import com.mindsmiths.armory.component.CustomComponent;
@@ -110,39 +109,19 @@ public class Moli extends Agent {
             new Screen("Welcome")
                 .add(new Header("logo.png", false))
                 .add(new Image("public/sovica.png", true))
-                .add(new Title("Prvo kratko upoznavanje, a onda želim čuti tvoje mišljenje ;)"))
-                .add(new SubmitButton("welcomeStarted", "Idemo!", "askForGender")),
-            new Screen("askForGender")
+                .add(new Title("Sada sam dostupna i na WhatsApp-u ;)"))
+                .add(new SubmitButton("welcomeStarted", "Reci mi više!", "askForWapp")),
+            new Screen("askForWapp")
                 .add(new Header("logo.png", true)) 
-                .add(new Title("Jesi li miočanin ili miočanka?")) 
-                .add(new Image("public/sovica.png", true))
-                .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
-            new Screen("askForAge")
-                .add(new Header("logo.png", true)) 
-                .add(new Title("Koji si razred?"))
-                .add(new Image("public/sovica.png", true))
-                .add(new SubmitButton("askForAgeStarted1", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
-                .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
-                .add(new SubmitButton("askForAgeStarted4", "Četvrti", "askForRating")),
-            new Screen("askForRating")
-                .add(new Header("logo.png", true)) 
-                .add(new Title("Kolika je vjerojatnost da bi preporučio MIOC frendu ili frendici?"))
-                .add(new Description("Označi odgovor na skali od 0 do 10. 0 znači da ne bi uopće preporučio, a 10 da bi sigurno preporučio."))
-                .add(new CustomComponent("Slider").addParam("inputId", "nps"))
-                .add(new SubmitButton("askForRatingStarted", "Idemo!", "askForFeedback")), //dodaj slider
-            new Screen("askForFeedback")
-                .add(new Header("logo.png", true))
-                .add(new Title("Zašto?"))
-                .add(new Description("Slobodno napiši  zašto si se odlučio za tu ocjenu i što možemo učiniti da bi ona bila bolja."))
-                .add(new TextArea("feedback", "Napiši svoj kometar..."))
-                .add(new SubmitButton("askForFeedbackStarted", "Pošalji", "endScreen")),
-            new Screen("endScreen")
+                .add(new Title("Pričajmo na WhatsApp-u!"))
+                .add(new Description("Zaboravi mail, sada me možeš kontaktirati preko WhatsApp-a. Sve ostalo ostaje isto ;) <br /> Samo trebaš upisati svoj broj mobitela!"))
+                .add(new Input("telephone", "+3850012345678", "tel", true))
+                .add(new SubmitButton("numberSubmit", "Idemo!", "endScreen")),
+                new Screen("endScreen")
                 .add(new Image("public/srce.png", false))
-                .add(new Title("Tvoj odgovor je poslan!"))
-                .add(new Description(response))
-        );
+                .add(new Title("Hvala ti!"))
+                .add(new Description("Čujemo se na Wapp-u "))
+            );
     }
 
     public void sendEmail(List<String> recipients, String emailTitle, String emailText) throws IOException {
