@@ -15,6 +15,7 @@ import agents.Moli;
 import signals.AddReview;
 import signals.NewPhoneEntry;
 import com.mindsmiths.ruleEngine.util.Agents;
+import utils.PhoneNumber;
 
 
 rule "Send initial email"
@@ -78,9 +79,9 @@ rule "Onboarding phone number received"
         agent: Moli()
     then
         String phoneNumber = signal.getParamAsString("telephone");
-        agent.send("SMITH", new NewPhoneEntry(phoneNumber));
-        delete(signal);
+        agent.send("SMITH", new NewPhoneEntry(PhoneNumber.convertToPhoneNumber(phoneNumber)));
         Agents.deleteAgent(agent, false);
+        delete(signal);
 end
 
 rule "Hello kind user"
