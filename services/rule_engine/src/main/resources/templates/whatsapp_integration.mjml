@@ -1,0 +1,35 @@
+<mjml>
+  <mj-body background-color="#efefef">
+    <mj-section full-width="full-width" background-color="white">
+      <mj-column>
+
+        <mj-image width="600px" src="https://i.ibb.co/5kBVxwG/Frame-1-1.png"></mj-image>
+
+        <mj-divider border-color="#286DAC"></mj-divider>
+
+        <mj-text font-size="24px" font-weight="bold" color="#286DAC" font-family="helvetica">Bok! 👋</mj-text>
+        <mj-text line-height="28px" font-size="20px" color="gray" font-family="helvetica">
+          Kako moja popularnost raste dan za danom, odlučila sam da je vrijeme da se prebacim na WhatsApp! <br /> <br />
+          Ali, kako bih ti mogla <i>slideati u DM-ove</i>, treba mi tvoj broj 😉
+        </mj-text>
+
+        <mj-button background-color="#286DAC" align="center" color="#ffffff" font-size="17px" font-weight="bold" href="%ARMORY_URL%" width="300px">
+          Molina anketa 🚀
+        </mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-wrapper full-width="full-width">
+      <mj-section>
+        <mj-column>
+          <mj-text color="#445566" font-size="11px" align="center" line-height="16px">
+            Dobili ste ovaj mail jer ste se prijavili u Moli. Moli je miočanski AI asistent. <br />
+            XV. gimnazija, Jordanovac 8
+          </mj-text>
+          <mj-text color="#445566" font-size="11px" align="center" line-height="16px">
+            Powered by Mindsmiths
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
