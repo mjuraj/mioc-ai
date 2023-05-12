@@ -7,3 +7,6 @@ services:
   rule-engine:
     env:
       JDK_JAVA_OPTIONS: -XX:MaxHeapSize=300M
+  control-panel:
+    env:
+      SECRET_KEY: '{{ env.CONTROL_PANEL_SECRET_KEY }}'
