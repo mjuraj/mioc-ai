@@ -73,7 +73,7 @@ end
 
 rule "Create a new phone number entry"
     when
-        signal: NewPhoneEntry() from entry-point "signals"
+        signal: NewPhoneEntry(phone != null) from entry-point "signals"
         agent: Smith()
     then
         agent.addNewPhoneNumber(signal.getPhone());
