@@ -12,12 +12,17 @@ import com.mindsmiths.sdk.utils.Utils;
 import signals.AddReview;
 import agents.MoliWapp;
 
+
+import com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage;
+import com.mindsmiths.infobipAdapter.api.MessageType;
+
 rule "Send initial message"
     when
         signal: Initialize() from entry-point "signals"
         agent: MoliWapp()
     then
         Log.info("MoliWapp has been initialized.");
+        agent.sendWhatsappTextMessage();
         // TODO: You can check if this agent is for
         // an existing email user by checking the age or gender.
         // These right now are not populated.
@@ -31,9 +36,7 @@ rule "Remind user to fill in the NPS survey"
                     lastNpsSent before[72h] ts)
     then
         modify(agent) { setReminderSent(true) }
-        
-        // TODO: Send a reminder.
-        // agent.sendWhatsappTextMessage(agent.getReminderText());
+        agent.sendWhatsappTextMessage(agent.getReminderText());
         delete(signal);
 end
 
@@ -43,12 +46,26 @@ rule "Send a new NPS message after 3 months"
         agent: MoliWapp(lastNpsSent before[90d] ts)
     then
         // TODO: Send a new message for NPS.
-        // agent.sendWhatsappTextMessage(agent.getIntroEmailText());
+        agent.sendWhatsappTextMessage(sendButtons());
         modify(agent) {
             setLastNpsSent(Utils.now()),
             setReminderSent(false),
             setFeedback(""),
             setRating(-1)
+        }
+end
+
+rule "Handle button response"
+    when
+        signal: InfobipReceivedMessage(message: message) from entry-point "signals"
+        agent: MoliWapp(
+            getPhoneNumber() != null
+        )
+    then
+        Log.info("Handle button press, message: " + signal);
+
+        if (message.getType() == MessageType.INTERACTIVE_BUTTON_REPLY) {
+            agent.handleButtonResponse(message.getId());
         }
 end
 

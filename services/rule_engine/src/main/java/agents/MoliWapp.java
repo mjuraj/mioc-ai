@@ -21,6 +21,10 @@ import com.mindsmiths.sdk.utils.Utils;
 import config.Settings;
 import lombok.*;
 
+import com.mindsmiths.infobipAdapter.api.Button;
+import com.mindsmiths.infobipAdapter.api.MessageWithButtons.Action;
+import signals.MessageContent;
+
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
@@ -81,6 +85,24 @@ public class MoliWapp extends Agent {
     // media, buttons etc.
     public void sendWhatsappTextMessage(String message) {
         InfobipAdapterAPI.sendWhatsappTextMessage(getConnection("infobip"), message);
+    }
+
+    public void sendButtons() {
+        MessageContent msg = new MessageContent(
+            "Bok ja sam Moli", //TODO: napisi introduction na Moli
+            new Action(List.of(
+                new Button("GET_ARMORY_LINK", "Idemo!"))));
+
+        InfobipAdapterAPI.sendWhatsappMessage(getConnection("infobip"), msg, "message/interactive/buttons");
+    }
+
+    String nps = " " + getArmoryUrl(); //TODO: prepisi Domagojevu poruku gdje se prilaze NPS armory link, lijepse formatirati link
+    String reminderMessage = "Vidim da još nisi ispunio/la anketu. Možeš li ju sada ispuniti? Hvala ti!"; //TODO: napisi 
+
+    public void handleButtonResponse(String id) {
+        if(id == "GET_ARMORY_LINK") {
+            sendWhatsappTextMessage(nps);
+        }
     }
 
     public void showNPSFlow() {
