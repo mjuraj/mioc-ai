@@ -89,15 +89,15 @@ public class MoliWapp extends Agent {
 
     public void sendButtons() {
         MessageContent msg = new MessageContent(
-            "Bok ja sam Moli", //TODO: napisi introduction na Moli
+            "Bok!\nJa sam Moli, miočanski Al asistent! Možeš me kontaktirati za razne stvari, a ja ću ti pokušati pomoći tako da ti u školi bude TOP!", //TODO: Ovo je samo za testing, napisati introduction na Moli
             new Action(List.of(
                 new Button("GET_ARMORY_LINK", "Idemo!"))));
 
         InfobipAdapterAPI.sendWhatsappMessage(getConnection("infobip"), msg, "message/interactive/buttons");
     }
 
-    String nps = " " + getArmoryUrl(); //TODO: prepisi Domagojevu poruku gdje se prilaze NPS armory link, lijepse formatirati link
-    String reminderMessage = "Vidim da još nisi ispunio/la anketu. Možeš li ju sada ispuniti? Hvala ti!"; //TODO: napisi 
+    String nps = "Hej, trebam tvoju pomoc!\nŽelim vidjeti što mogu učiniti da ti bude bolje u MIOC-u i zato provodim kratku anketu. Možeš ju ispuniti?" + getArmoryUrl(); //TODO: Ovo je samo za testing, napisati poruku gdje se prilaze NPS armory link, lijepse formatirati link
+    String reminderMessage = "Vidim da još nisi ispunio/la anketu. Možeš li ju sada ispuniti? Hvala ti!"; //TODO: Ovo je samo za testing, napisati 
 
     public void handleButtonResponse(String id) {
         if(id == "GET_ARMORY_LINK") {
