@@ -101,11 +101,11 @@ public class Smith extends Agent {
         nextNumberRow++;
     }
 
-    public void addReviewToSheet(String mail, String gender, Integer age, Integer rating, String feedback, Long timestamp) {
+    public void addReviewToSheet(/*String mail, */String gender, Integer age, Integer rating, String feedback, Long timestamp) {
         String range = String.format("Odgovori!A%d:F%d", nextAnsRow, nextAnsRow);
-        List<String> data = List.of(mail, gender, String.valueOf(age), String.valueOf(rating), feedback, String.valueOf(timestamp));
+        List<String> data = List.of(/*mail, */gender, String.valueOf(age), String.valueOf(rating), feedback, String.valueOf(timestamp));
         List<List<String>> values = List.of(data);
-        GSheetsAdapterAPI.updateSheet(values, range);
+        GSheetsAdapterAPI.updateSheet(values, range); //TODO: replace mail with phone numbers
         nextAnsRow++;
     }
 }
