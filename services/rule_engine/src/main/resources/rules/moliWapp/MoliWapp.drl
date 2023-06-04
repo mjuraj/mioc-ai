@@ -24,7 +24,7 @@ rule "Send initial message"
         agent: MoliWapp()
     then
         Log.info("MoliWapp has been initialized.");
-        agent.sendButtons(); //TODO: MoliWapp can send messages to new users, but without buttons
+        agent.sendNpsMessage(); //TODO: MoliWapp can send messages to new users, but without buttons
         // TODO: You can check if this agent is for
         // an existing email user by checking the age or gender.
         // These right now are not populated.
@@ -186,7 +186,7 @@ rule "Feedback"
 
         // TODO: Make sure SMITH supports
         // receiveing a phone number instead of email.
-        agent.send("SMITH", new AddReview(agent.getConnection("infobip"), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback(), Utils.now()));
+        agent.send("SMITH", new AddReview(agent.getId(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback(), Utils.now()));
         delete(signal);
 end
 

@@ -67,7 +67,7 @@ rule "Add Review"
         signal: AddReview() from entry-point "signals"
         agent: Smith()
     then
-        agent.addReviewToSheet(/*signal.getPhone(), */signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback(), signal.getTimestamp().atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli());
+        agent.addReviewToSheet(signal.getId(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback(), signal.getTimestamp().atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli());
         delete(signal); //TODO: figure out how to save reviews with phone numbers without errors
 end
 

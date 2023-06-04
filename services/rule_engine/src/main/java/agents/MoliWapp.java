@@ -35,11 +35,14 @@ public class MoliWapp extends Agent {
     Integer rating;
     String feedback;
     String response;
+    String armoryLink;
 
     public boolean reminderSent;
     public LocalDateTime lastNpsSent;
 
+
     public String getArmoryUrl() {
+        // Log.info(Settings.ARMORY_SITE_URL + "/" + getConnection("armory"));
         return Settings.ARMORY_SITE_URL + "/" + getConnection("armory");
     }
 
@@ -47,6 +50,9 @@ public class MoliWapp extends Agent {
         this.id = phone;
         setConnection("infobip", phone);
         setConnection("armory", Utils.randomString());
+        setArmoryLink(getArmoryUrl());
+        Log.info("ARMORY URL ID:: " + getConnection("armory"));
+        Log.info("ARMORY URL:: " + getArmoryLink());
     }
 
     public MoliWapp(String phone, String gender, Integer age) {
@@ -96,12 +102,18 @@ public class MoliWapp extends Agent {
         InfobipAdapterAPI.sendWhatsappMessage(getConnection("infobip"), msg, "message/interactive/buttons");
     }
 
-    String nps = "Hej, trebam tvoju pomoc!\nŽelim vidjeti što mogu učiniti da ti bude bolje u MIOC-u i zato provodim kratku anketu. Možeš ju ispuniti?" + getArmoryUrl(); //TODO: Ovo je samo za testing, napisati poruku gdje se prilaze NPS armory link, lijepse formatirati link
+    public void sendNpsMessage() {
+        String nps = "Hej, trebam tvoju pomoc!\nŽelim vidjeti što mogu učiniti da ti bude bolje u MIOC-u i zato provodim kratku anketu. Možeš ju ispuniti?\n" + getArmoryUrl();
+        sendWhatsappTextMessage(nps);
+    }
+
+    // String nps = "Hej, trebam tvoju pomoc!\nŽelim vidjeti što mogu učiniti da ti bude bolje u MIOC-u i zato provodim kratku anketu. Možeš ju ispuniti?" + getArmoryLink(); //TODO: Ovo je samo za testing, napisati poruku gdje se prilaze NPS armory link, lijepse formatirati link
     String reminderMessage = "Vidim da još nisi ispunio/la anketu. Možeš li ju sada ispuniti? Hvala ti!"; //TODO: Ovo je samo za testing, napisati 
 
     public void handleButtonResponse(String id) {
         if(id == "GET_ARMORY_LINK") {
-            sendWhatsappTextMessage(nps);
+            // sendWhatsappTextMessage(nps);
+            sendNpsMessage();
         }
     }
 
