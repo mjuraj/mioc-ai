@@ -71,7 +71,6 @@ services:
       - armory
       - email-adapter
       - infobip-adapter
-      - infobip-adapter
     env:
       ARMORY_SITE_URL: '{{ env.ARMORY_SITE_URL }}'
       PRINCIPAL_EMAIL: '{{ env.PRINCIPAL_EMAIL }}'

@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddReview extends Message {
-    String email;
+    String email; // TODO: Change this to phone.
     String gender;
     Integer age;
     Integer rating;

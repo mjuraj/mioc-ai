@@ -1,6 +1,7 @@
 package agents;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mindsmiths.armory.ArmoryAPI;
@@ -22,6 +23,8 @@ import config.Settings;
 import lombok.*;
 
 import com.mindsmiths.infobipAdapter.api.Button;
+import com.mindsmiths.infobipAdapter.api.MessageType;
+import com.mindsmiths.infobipAdapter.api.WhatsappMessage;
 import com.mindsmiths.infobipAdapter.api.MessageWithButtons.Action;
 import signals.MessageContent;
 
@@ -35,7 +38,10 @@ public class MoliWapp extends Agent {
     Integer rating;
     String feedback;
     String response;
-    String armoryLink;
+
+    // TODO: Import resetting and forgetting memory.
+    private List<String> memory = new ArrayList<>();
+    private int MAX_MEMORY = 3;
 
     public boolean reminderSent;
     public LocalDateTime lastNpsSent;
@@ -50,9 +56,6 @@ public class MoliWapp extends Agent {
         this.id = phone;
         setConnection("infobip", phone);
         setConnection("armory", Utils.randomString());
-        setArmoryLink(getArmoryUrl());
-        Log.info("ARMORY URL ID:: " + getConnection("armory"));
-        Log.info("ARMORY URL:: " + getArmoryLink());
     }
 
     public MoliWapp(String phone, String gender, Integer age) {
@@ -72,7 +75,7 @@ public class MoliWapp extends Agent {
         Log.info("Prompt for GPT-3:\n" + prompt);
         GPT3AdapterAPI.complete(
             prompt, // input prompt
-            "text-davinci-001", // model
+            "text-davinci-003", // model
             150, // max tokens
             0.9, // temperature
             1.0, // topP
@@ -85,6 +88,24 @@ public class MoliWapp extends Agent {
             1, // best of
             null // logit bias
         );
+    }
+
+    private void trimMemory() {
+        if (memory.size() > MAX_MEMORY + 1)
+            memory = memory.subList(memory.size() - 1 - MAX_MEMORY, memory.size());
+    }
+
+    public void handleWhatsappMessage(WhatsappMessage message) {
+        Log.info("Received a whatsapp message; type: " + message.getType() + "; signal: " + message);
+        if (message.getType() == MessageType.INTERACTIVE_BUTTON_REPLY) {
+            sendButtons();
+        } else {
+
+            // TODO: Add memory to the prompt.
+            String prompt = "You are Moli, an AI agent helping students about MIOC highschool, only talk in Croatian. You can only talk about these topics: raspored, učionice, događaji u školi, stručna služba. In case the message isn't about these topics, reply with 'Ne mogu odgovoriti na ovo pitanje. Mogu li ti pomoći s nečim drugim?'.\n Human: <message>\nMoli: response\n";
+            simpleGPT3Request(prompt);
+            addMessageToMemory("Human", message.getText());
+        }
     }
 
     // TODO: A generic is needed here for all types of messages,
@@ -102,7 +123,19 @@ public class MoliWapp extends Agent {
         InfobipAdapterAPI.sendWhatsappMessage(getConnection("infobip"), msg, "message/interactive/buttons");
     }
 
+    public void addMessageToMemory(String sender, String text){
+        memory.add(String.format("%s: %s\n", sender, text));
+        trimMemory();
+    }
+
     public void sendNpsMessage() {
+        MessageContent msg = new MessageContent(
+            "Bok!\nJa sam Moli, miočanski Al asistent! Možeš me kontaktirati za razne stvari, a ja ću ti pokušati pomoći tako da ti u školi bude TOP!", //TODO: Ovo je samo za testing, napisati introduction na Moli
+            new Action(List.of(
+                new Button("GET_ARMORY_LINK", "Idemo!"))));
+
+        InfobipAdapterAPI.sendWhatsappMessage(getConnection("infobip"), msg, "message/interactive/buttons");
+
         String nps = "Hej, trebam tvoju pomoc!\nŽelim vidjeti što mogu učiniti da ti bude bolje u MIOC-u i zato provodim kratku anketu. Možeš ju ispuniti?\n" + getArmoryUrl();
         sendWhatsappTextMessage(nps);
     }

@@ -11,9 +11,6 @@ import com.mindsmiths.gpt3.completion.GPT3Completion;
 import com.mindsmiths.sdk.utils.Utils;
 import signals.AddReview;
 import agents.MoliWapp;
-
-
-import com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage;
 import com.mindsmiths.infobipAdapter.api.MessageType;
 
 //TODO: MoliWapp will send armory link when asked, but ID is "null" (no nps, only numbers collecting)
@@ -57,18 +54,14 @@ rule "Send a new NPS message after 3 months"
         }
 end
 
-rule "Handle button response"
+rule "Handle a WhatsApp response"
     when
         signal: InfobipReceivedMessage(message: message) from entry-point "signals"
         agent: MoliWapp()
     then
-        Log.info("Handle button press, message: " + signal);
-
-        if (message.getType() == MessageType.INTERACTIVE_BUTTON_REPLY) {
-            agent.handleButtonResponse(message.getId());
-        }
+        agent.handleWhatsappMessage(message);
+        delete(signal);
 end
-
 rule "Show NPS flow on Armory"
     when
         signal: UserConnected() from entry-point "signals"
@@ -76,14 +69,6 @@ rule "Show NPS flow on Armory"
     then
         agent.showNPSFlow();
         delete(signal);
-end
-
-rule "Handle message"
-    when
-        signal: InfobipReceivedMessage(message: message) from entry-point "signals"
-    then
-        // What are we expected to do here?
-        
 end
 
 // User clicked on "Miočanin" on screen "askForGender"
@@ -186,6 +171,7 @@ rule "Feedback"
 
         // TODO: Make sure SMITH supports
         // receiveing a phone number instead of email.
+        Log.info("Id: " + agent.getId());
         agent.send("SMITH", new AddReview(agent.getId(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback(), Utils.now()));
         delete(signal);
 end
@@ -206,5 +192,15 @@ rule "Store response"
         agent: MoliWapp( response == null || response == "" )
     then
         modify(agent) {setResponse(gpt3Result.getBestResponse())};
+        delete(gpt3Result);
+end
+
+rule "Send conversation response"
+    when
+        gpt3Result: GPT3Completion() from entry-point "signals"
+        agent: MoliWapp( response != null )
+    then
+        modify(agent) {addMessageToMemory("Moli", message.getText())};
+        agent.sendWhatsappTextMessage(gpt3Result.getBestResponse());
         delete(gpt3Result);
 end
