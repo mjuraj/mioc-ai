@@ -50,7 +50,7 @@ class KnowledgeBaseAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change or "text" in form.changed_data:
             obj.item_status = 'NOT PROCESSED'
-        #upload_txt_file_to_azure(obj.name, obj.text)
+        upload_txt_file_to_azure(obj.name, obj.text)
         super().save_model(request, obj, form, change)
 
     def get_readonly_fields(self, request, obj=None):

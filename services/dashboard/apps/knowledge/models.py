@@ -21,6 +21,6 @@ class File(BaseModel):
             'itemStatus': self.item_status,
         }
 
-#@receiver(post_delete, sender=File)
-#def file_deleted(instance: File, *_, **__):
-#    remove_file_from_azure(instance.name)
+@receiver(post_delete, sender=File)
+def file_deleted(instance: File, *_, **__):
+    remove_file_from_azure(instance.name)
