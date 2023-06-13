@@ -47,3 +47,7 @@ services:
       run: "uvicorn calendar_adapter.service:app --port=8003"
     env:
       SERVICE_HOST: 'http://localhost:8003'
+  mitems:
+    env:
+      SITE_URL: localhost:8004
+    port: 8004

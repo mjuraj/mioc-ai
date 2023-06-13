@@ -40,7 +40,7 @@
           {
             "description": "Welcome message",
             "type": "TEXT",
-            "content": "Hi there! I'm Moli. I can help you with the following topics: MIOC.\nStart by typing Moli 🙂"
+            "content": "Bok! Super da si na wapp-u! \nOvdje me možeš pitati što god te zanima, a ja ću ti pomoći ako mogu.\nMožeš početi sa porukom \"Moli\"! 😉"
           }
         ]
       },
@@ -83,25 +83,10 @@
       {
         "name": "About Policy",
         "elements": [
-{
-            "description": "Text",
-            "type": "TEXT",
-            "content": "Feel free to ask me anything about one of these: MIOC"
-          }
-]
-      },
-      {
-        "name": "Power menu",
-        "elements": [
-          {
-            "description": "Options",
-            "type": "OPTIONS",
-            "content": "[{\"text\":\"Open app\",\"id\":\"open-app\"},{\"text\":\"Learn more\",\"id\":\"about-policy\"},{\"text\":\"Talk with {{ managerFirstName }}\",\"id\":\"schedule-a-call\"}]"
-          },
           {
             "description": "Text",
             "type": "TEXT",
-            "content": "What would you like to do? 😊"
+            "content": "Posjeti web-stranicu škole https://mioc.hr ili me pitaj bilo što vezano uz školu. Ja ću ti pokušati pomoći tako da ti u školi bude 🔝!"
           }
         ]
       },
@@ -111,7 +96,22 @@
           {
             "description": "Text",
             "type": "TEXT",
-            "content": "You can find the app here: {{ url }}"
+            "content": "Ovdje se nalazi link za anketu: {{ url }}"
+          }
+        ]
+      },
+      {
+        "name": "Power menu",
+        "elements": [
+          {
+            "description": "Options",
+            "type": "OPTIONS",
+            "content": "[{\"text\":\"O školi\",\"id\":\"about-policy\"},{\"text\":\"Aktivnosti u školi\",\"id\":\"school-activities\"},{\"text\":\"Razgovor s osobljem\",\"id\":\"talk-to-personnel\"}]"
+          },
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "Kako ti mogu pomoći? 😊"
           }
         ]
       },
@@ -132,6 +132,16 @@
             "description": "Title",
             "type": "TEXT",
             "content": "Pick time for a call"
+          }
+        ]
+      },
+      {
+        "name": "Talk to personnel",
+        "elements": [
+          {
+            "description": "text",
+            "type": "TEXT",
+            "content": "Svo stručno osoblje u školi uvijek je dostupno za razgovor. Možeš se obratiti psihologicama u plavom hodniku za pomoć ili referentu na ulazu kod zbornice. :D"
           }
         ]
       }
