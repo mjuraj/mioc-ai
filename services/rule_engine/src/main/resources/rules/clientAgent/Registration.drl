@@ -2,7 +2,7 @@ package rules.clientAgent;
 
 import com.mindsmiths.sdk.core.db.Database;
 import com.mindsmiths.dashboard.models.Client;
-import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.model.Initialize;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.ruleEngine.util.Agents;
 import com.mindsmiths.dashboard.DashboardAPI;
@@ -24,18 +24,12 @@ import hitl.HITLPlugin;
 rule "Register client"
     salience 500
     when
-        message: ReceivedMessage(contactName: contactName) from entry-point "signals"
-        agent: ClientAgent(client == null, phone: getConnection("phone"), id: id)
+        signal: Initialize() from entry-point "signals"
+        agent: ClientAgent(phone: getConnection("phone"), client: client)
     then
-        String[] name = contactName.trim().split("\\s+", 2);
-        String firstName = name[0];
-        String lastName = name.length > 1 ? name[1] : "";
-
-        Client client = new Client(id, firstName, lastName, phone);
         modify(agent) {
-            setClient(client),
-            askGPT("This is your first message with the client. Introduce yourself.")
+            sendMessage(Mitems.getText("onboarding.intro.welcome-message"), false)
         };
         DashboardAPI.updateOrCreateClient(client);
-        delete(message);
+        delete(signal);
 end

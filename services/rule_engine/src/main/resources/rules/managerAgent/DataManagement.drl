@@ -27,10 +27,7 @@ rule "Set default assistant configuration"
     when
         agent: ManagerAgent(assistantConfiguration == null)
     then
-        Log.info("Grabbing from database!");
         AssistantConfiguration defaultConfig = Database.get(Filters.eq("defaultAssistant", true), AssistantConfiguration.class);
-        Log.info("This is running!");
-        Log.info("config: " + defaultConfig);
         if (defaultConfig != null) {
             modify(agent) { setAssistantConfiguration(defaultConfig) };
         }

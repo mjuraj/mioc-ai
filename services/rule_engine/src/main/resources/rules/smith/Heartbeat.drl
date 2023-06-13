@@ -15,7 +15,9 @@ import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet
 
 import java.time.ZoneId;
 
-// Connecting to google spreadsheet
+// TODO: Smith no longer updates gsheets all the time.
+// Agents are directly created via Database.
+/*
 rule "Get Google Sheets"
     when
         Heartbeat(now: timestamp) from entry-point "signals"
@@ -25,7 +27,7 @@ rule "Get Google Sheets"
             setLastTableUpdate(now)
         };
         GSheetsAdapterAPI.getSpreadsheet();
-end
+end*/
 
 rule "Start processing a summary for Principal"
     when
@@ -70,13 +72,4 @@ rule "Add Review"
     // TODO: This getEmail() should be migrated to getPhone() but also change AddReview.
         agent.addReviewToSheet(signal.getEmail(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback(), signal.getTimestamp().atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli());
         delete(signal); //TODO: figure out how to save reviews with phone numbers without errors
-end
-
-rule "Create a new phone number entry"
-    when
-        signal: NewPhoneEntry(phone != null) from entry-point "signals"
-        agent: Smith()
-    then
-        agent.addNewPhoneNumber(signal.getPhone());
-        delete(signal);
 end

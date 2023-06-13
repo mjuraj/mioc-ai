@@ -3,6 +3,7 @@ package agents;
 import com.mindsmiths.dashboard.models.Client;
 import com.mindsmiths.dashboard.models.Manager;
 import com.mindsmiths.sdk.core.db.Database;
+import com.mindsmiths.sdk.utils.Utils;
 import com.mindsmiths.dashboard.models.AssistantConfiguration;
 import com.mindsmiths.dashboard.DashboardAPI;
 import com.mongodb.client.model.Filters;
@@ -19,13 +20,27 @@ public class ClientAgent extends ChatAgent {
     Manager manager;
     boolean waitingForManager;
 
+    Integer age;
+    String gender;
+    String classLetter;
+
+    public ClientAgent(String name, String phoneNumber, Integer age, String gender, String classLetter) {
+        this.age = age;
+        this.gender = gender;
+        this.classLetter = classLetter;
+        this.client = new Client(name, phoneNumber);
+        
+        setConnection("phone", client.getPhoneNumber());
+    }
 
     public void clientUpdate(Client client) {
         this.client = client;
         timeZone = client.getTimeZone();
 
         // Update connections
-        setConnection("phone", client.getPhoneNumber());
+        if (getConnection("armory") == null)
+            setConnection("armory", Utils.randomString());
+
         setConnection("dashboardId", client.getId());
         if (client.getEmail() != null) setConnection("email", client.getEmail());
         if (client.getAssistantConfigurationId() != null)
@@ -63,6 +78,8 @@ public class ClientAgent extends ChatAgent {
             context.put("lastName", client.getLastName());
             context.put("email", client.getEmail());
             context.put("phone", client.getPhoneNumber());
+            context.put("age", age);
+            context.put("gender", gender);
         }
 
         if (manager != null) {

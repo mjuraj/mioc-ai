@@ -30,7 +30,7 @@ rule "Show menu on keyword"
     salience 200
     when
         signal: ReceivedMessage(text != null, (text.equalsIgnoreCase("menu") || text.toLowerCase() == "moli")) from entry-point "signals"
-        agent: ClientAgent(manager: manager != null, getConnection("email") != null)
+        agent: ClientAgent(manager: manager != null)
     then
         agent.sendMessageWithButtons(Mitems.getText("power-menu.power-menu.text"), "power-menu.power-menu.options", agent.fillContext());
         delete(signal);
@@ -56,11 +56,12 @@ end
 
 rule "Schedule a call"
     when
-        signal: ButtonAnswer(answer == "schedule-a-call") from entry-point "signals"
+        signal: ButtonAnswer(answer == "talk-to-personnel") from entry-point "signals"
         agent: ClientAgent(schedulingAgentId: schedulingAgentId)
     then
-        modify(agent) { setSchedulingFlow("powerMenu") };
-        agent.send(schedulingAgentId, new GetAvailableTimeslots());
+        //modify(agent) { setSchedulingFlow("powerMenu") };
+        agent.sendMessage(Mitems.getText("power-menu.talk-to-personnel.text"));
+        //agent.send(schedulingAgentId, new GetAvailableTimeslots());
         delete(signal);
 end
 

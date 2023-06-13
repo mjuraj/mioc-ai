@@ -9,7 +9,6 @@ import java.util.Map;
 import com.mindsmiths.gsheetsAdapter.GSheetsAdapterAPI;
 import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet;
 import com.mindsmiths.ruleEngine.model.Agent;
-import com.mindsmiths.ruleEngine.util.Agents;
 import com.mindsmiths.ruleEngine.util.Log;
 
 import config.Settings;
@@ -45,7 +44,6 @@ public class Smith extends Agent {
 
         sheetSize = answers.size();
         nextAnsRow = answers.size() + 2;
-        createNewAgents(spreadsheet);
     }
 
     public void generateSummaryFromData(Spreadsheet spreadsheet) {
@@ -76,29 +74,6 @@ public class Smith extends Agent {
             int totalAverage = totalSum / count;
             send("PRINCIPAL", new SummaryReadyMessage(count, totalAverage, feedback));
         }
-    }
-
-    // Going through the list of phone numbers in the spreadsheet and creating agents for new phone numbers.
-    public void createNewAgents(Spreadsheet spreadsheet) {
-        List<Map<String, String>> numberList = spreadsheet.getSheets().get("Brojevi");
-        nextNumberRow = numberList.size() + 2;
-
-        for (Map<String, String> item : numberList) {
-            for (String key : item.keySet()) {
-                String phone = item.get(key);
-                if(!Agents.exists(phone)) {
-                    Agents.createAgent(new MoliWapp(phone));
-                }
-            }
-        }
-    }
-
-    public void addNewPhoneNumber(String phone) {
-        String range = String.format("Brojevi!A%d", nextNumberRow, nextNumberRow);
-        List<String> data = List.of(phone);
-        List<List<String>> values = List.of(data);
-        GSheetsAdapterAPI.updateSheet(values, range);
-        nextNumberRow++;
     }
 
     public void addReviewToSheet(String phone, String gender, Integer age, Integer rating, String feedback, Long timestamp) {

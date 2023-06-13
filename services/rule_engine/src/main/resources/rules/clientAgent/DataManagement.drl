@@ -40,11 +40,7 @@ rule "Set default assistant configuration"
     when
         agent: ClientAgent(assistantConfiguration == null)
     then
-        ArrayList<AssistantConfiguration> available = AssistantConfiguration.getAll();
         AssistantConfiguration defaultConfig = Database.get(Filters.eq("defaultAssistant", true), AssistantConfiguration.class);
-        Log.info("This is running!");
-        Log.info("config: " + defaultConfig);
-        Log.info("config: " + available);
         modify(agent) { setAssistantConfiguration(defaultConfig) };
 end
 
