@@ -8,6 +8,7 @@ import ArmorySelect from "./components/ArmorySelect.vue";
 import QuantitySelect from "./components/QuantitySelect.vue";
 import NestedToggle from "./components/NestedToggle.vue";
 import AvailableSchedules from "./components/AvailableSchedules.vue";
+import Toggle from "./components/Toggle.vue";
 
 export default {
   name: "App",
