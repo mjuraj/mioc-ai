@@ -27,6 +27,7 @@ import hitl.HITLPlugin
 import signals.DiscordButtonMessageRequest
 
 
+/*
 rule "Assistant switch"
     salience 250
     when
@@ -38,7 +39,7 @@ rule "Assistant switch"
         if (config != null) {
             agent.switchAgent(config);
         }
-end
+end*/
 
 // Communication for registered users
 

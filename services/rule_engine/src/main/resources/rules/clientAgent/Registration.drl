@@ -4,32 +4,49 @@ import com.mindsmiths.sdk.core.db.Database;
 import com.mindsmiths.dashboard.models.Client;
 import com.mindsmiths.ruleEngine.model.Initialize;
 import com.mindsmiths.ruleEngine.util.Log;
-import com.mindsmiths.ruleEngine.util.Agents;
 import com.mindsmiths.dashboard.DashboardAPI;
-import com.mindsmiths.textembedder.reply.EmbeddingSearchResult;
 import com.mindsmiths.mitems.Mitems;
-import com.mindsmiths.sdk.utils.templating.Templating;
 
-import static utils.TextUtils.trimText;
 import agents.ClientAgent;
 import messages.ReceivedMessage;
 import messages.GPTResult;
 
-import java.util.Map;
-import java.util.List;
-import utils.Settings;
-import hitl.HITLPlugin;
 
-
-rule "Register client"
-    salience 500
+rule "Register client if client doesn't exist"
     when
         signal: Initialize() from entry-point "signals"
-        agent: ClientAgent(phone: getConnection("phone"), client: client)
+        agent: ClientAgent(phone: getConnection("phone"), !hasConnection("dashboardId"), client: client)
     then
-        modify(agent) {
-            sendMessage(Mitems.getText("onboarding.intro.welcome-message"), false)
-        };
         DashboardAPI.updateOrCreateClient(client);
         delete(signal);
+end
+
+rule "Introduce agent to a new user when ready"
+    when
+        agent: ClientAgent(
+            introducedToClient == false, 
+            hasConnection("dashboardId"),
+            !hasConnection("email"), 
+            phone: getConnection("phone"),
+            client: client)
+    then
+        modify(agent) {
+            setIntroducedToClient(true),
+            sendMessage(Mitems.getText("onboarding.intro.welcome-message"), false)
+        };
+end
+
+rule "Introduce agent to an old user when ready"
+    when
+        agent: ClientAgent(
+            introducedToClient == false, 
+            hasConnection("dashboardId"),
+            hasConnection("email"), 
+            phone: getConnection("phone"),
+            client: client)
+    then
+        modify(agent) {
+            setIntroducedToClient(true),
+            sendMessage(Mitems.getText("onboarding.intro.welcome-old-user"), false)
+        };
 end

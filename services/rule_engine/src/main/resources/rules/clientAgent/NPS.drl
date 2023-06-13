@@ -2,22 +2,48 @@ package rules.clientAgent;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
 import com.mindsmiths.ruleEngine.model.Initialize;
+import com.mindsmiths.armory.event.UserConnected;
 import com.mindsmiths.ruleEngine.util.Log;
 import com.mindsmiths.sdk.utils.Utils;
+import com.mindsmiths.mitems.Mitems;
 import signals.AddReview;
 import agents.ClientAgent;
 
-/*
+rule "Show NPS flow"
+    when
+        signal: UserConnected() from entry-point "signals"
+        agent: ClientAgent(rating == null)
+    then
+        agent.showNPSFlow();
+        delete(signal);
+end
+
 rule "Remind user to fill in the NPS survey"
     when
         signal: Heartbeat(ts: timestamp) from entry-point "signals"
-        agent: ClientAgent(reminderSent == false,
-                    age == null,
+        agent: ClientAgent(npsReminderSent == false,
+                    rating == null,
                     lastNpsSent before[72h] ts)
     then
-        modify(agent) { setReminderSent(true) }
-        agent.sendWhatsappTextMessage(agent.getReminderMessage());
+        modify(agent) { 
+            setNpsReminderSent(true),
+            sendMessage(Mitems.getText("nps.reminder.text"))
+        }
         delete(signal);
+end
+
+rule "Send a first NPS message"
+    when
+        signal: Heartbeat(ts: timestamp) from entry-point "signals"
+        agent: ClientAgent(lastNpsSent == null)
+    then
+        modify(agent) {
+            sendContextMessage(Mitems.getText("nps.introduction-message.first-time")),
+            setLastNpsSent(Utils.now()),
+            setNpsReminderSent(false),
+            setFeedback(""),
+            setRating(null)
+        }
 end
 
 rule "Send a new NPS message after 3 months"
@@ -25,12 +51,42 @@ rule "Send a new NPS message after 3 months"
         signal: Heartbeat(ts: timestamp) from entry-point "signals"
         agent: ClientAgent(lastNpsSent before[90d] ts)
     then
-        agent.sendNpsMessage();
         modify(agent) {
+            sendContextMessage(Mitems.getText("nps.introduction-message.text")),
             setLastNpsSent(Utils.now()),
-            setReminderSent(false),
+            setNpsReminderSent(false),
             setFeedback(""),
-            setRating(-1)
+            setRating(null)
         }
 end
-*/
+
+// User selected rating on screen "askForRating"
+rule "Rating"
+    when
+        signal: Submit(screenId == "askForRating") from entry-point "signals"
+        agent: ClientAgent()
+    then
+        modify(agent) {
+            setRating(signal.getParamAsInteger("nps"))
+        };
+        delete(signal)
+end
+
+// User inputted feedback on screen "askForFeedback"
+rule "Feedback"
+    when
+        signal: Submit(textareaInput: getParamAsString("feedback"), screenId == "askForFeedback") from entry-point "signals"
+        agent: ClientAgent()
+    then
+        String feedback = signal.getParamAsString("feedback");
+        if(feedback == null)
+            feedback = "";
+            
+        agent.send("SMITH", new AddReview(agent.getId(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback(), Utils.now()));
+        modify(agent) {
+            setFeedback(feedback),
+            rawGPT3Request(Mitems.getText("nps.thanks.prompt"), 0.3)
+        };
+
+        delete(signal);
+end

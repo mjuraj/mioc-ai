@@ -3,7 +3,6 @@ package rules.smith;
 import agents.Smith;
 import signals.AddReview;
 import signals.RequestSummary;
-import signals.NewPhoneEntry;
 import config.Settings;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
@@ -15,9 +14,6 @@ import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet
 
 import java.time.ZoneId;
 
-// TODO: Smith no longer updates gsheets all the time.
-// Agents are directly created via Database.
-/*
 rule "Get Google Sheets"
     when
         Heartbeat(now: timestamp) from entry-point "signals"
@@ -27,7 +23,7 @@ rule "Get Google Sheets"
             setLastTableUpdate(now)
         };
         GSheetsAdapterAPI.getSpreadsheet();
-end*/
+end
 
 rule "Start processing a summary for Principal"
     when

@@ -97,12 +97,11 @@ public class Runner extends RuleEngineService {
                 DataChanges.on(AssistantConfiguration.class).sendTo(
                         (assistantConfiguration, changeType) -> Agents.getByConnection("assistant", assistantConfiguration.getConfigId()))
         );
-        // TODO: If feature is not onboarding to do something else.
         configureSignals(
             Events.on(UserConnected.class).sendTo(
-                (msg) -> msg.getParamAsString("feature") != null && msg.getParamAsString("feature").equalsIgnoreCase("onboarding") 
-                ? Agents.createAgent(new OnboardingAgent(msg.getConnectionId()))
-                : null)
+                (msg) -> msg.getParamAsString("f") != null && msg.getParamAsString("f").equalsIgnoreCase("onboarding") 
+                ? Agents.getOrCreateByConnection("armory", msg.getConnectionId(), new OnboardingAgent(msg.getConnectionId()))
+                : Agents.getByConnection("armory", msg.getConnectionId()))
         );
         registerForChanges(AssistantConfiguration.class);
         registerForChanges(Manager.class);

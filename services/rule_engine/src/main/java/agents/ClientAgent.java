@@ -5,11 +5,22 @@ import com.mindsmiths.dashboard.models.Manager;
 import com.mindsmiths.sdk.core.db.Database;
 import com.mindsmiths.sdk.utils.Utils;
 import com.mindsmiths.dashboard.models.AssistantConfiguration;
+import com.mindsmiths.armory.ArmoryAPI;
+import com.mindsmiths.armory.Screen;
+import com.mindsmiths.armory.component.Image;
+import com.mindsmiths.armory.component.Header;
+import com.mindsmiths.armory.component.CustomComponent;
+import com.mindsmiths.armory.component.Description;
+import com.mindsmiths.armory.component.Title;
+import com.mindsmiths.armory.component.SubmitButton;
+import com.mindsmiths.armory.component.TextArea;
 import com.mindsmiths.dashboard.DashboardAPI;
 import com.mongodb.client.model.Filters;
 
 import hitl.HITLPlugin;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -23,6 +34,13 @@ public class ClientAgent extends ChatAgent {
     Integer age;
     String gender;
     String classLetter;
+
+    Integer rating;
+    String feedback;
+
+    boolean npsReminderSent = false;
+    LocalDateTime lastNpsSent = null;
+    boolean introducedToClient = false;
 
     public ClientAgent(String name, String phoneNumber, Integer age, String gender, String classLetter) {
         this.age = age;
@@ -68,9 +86,38 @@ public class ClientAgent extends ChatAgent {
         return (client.getFirstName() + " " + client.getLastName()).trim();
     }
 
+    public void showNPSFlow() {
+        ArmoryAPI.show(
+            getConnection("armory"),
+            new Screen("Welcome")
+                .add(new Header("logo.png", false))
+                .add(new Image("public/sovica.png"))
+                .add(new Title("Želim čuti tvoje mišljenje o školi 😊"))
+                .add(new SubmitButton("welcomeStarted", "Idemo!", "askForRating")),
+            new Screen("askForRating")
+                .add(new Header("logo.png")) 
+                .add(new Title("Kolika je vjerojatnost da bi preporučio MIOC frendu ili frendici?"))
+                .add(new Description("Označi odgovor na skali od 0 do 10. 0 znači da ne bi uopće preporučio, a 10 da bi sigurno preporučio."))
+                .add(new CustomComponent("Slider").setParam("inputId", "nps"))
+                .add(new SubmitButton("askForRatingStarted", "Idemo!", "askForFeedback")), //dodaj slider
+            new Screen("askForFeedback")
+                .add(new Header("logo.png", true))
+                .add(new Title("Zašto?"))
+                .add(new Description("Slobodno napiši zašto si se odlučio za tu ocjenu i što možemo učiniti da bi ona bila bolja."))
+                .add(new TextArea("feedback", "Napiši svoj kometar..."))
+                .add(new SubmitButton("askForFeedbackSubmit", "Pošalji", "endScreen")),
+            new Screen("endScreen")
+                .add(new Image("public/srce.png"))
+                .add(new Title("Tvoj odgovor je poslan!"))
+                .add(new Description("Hvala ti na odgovoru! Sada se možeš vratiti na WhatsApp."))
+        );
+    }
+
     @Override
     public Map<String, Object> fillContext() {
         Map<String, Object> context = super.fillContext();
+
+        context.put("npsUrl", getArmoryUrl("nps"));
 
         if (client != null) {
             context.put("name", getName());

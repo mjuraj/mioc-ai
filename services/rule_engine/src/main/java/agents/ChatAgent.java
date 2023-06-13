@@ -278,6 +278,10 @@ public class ChatAgent extends Agent {
         sendMessage(text, false);
     }
 
+    public void sendContextMessage(String text) {
+        sendMessage(Templating.recursiveRender(text, fillContext()), false);
+    }
+
     public void sendMessage(String text, boolean memorize) {
         InfobipAdapterAPI.sendWhatsappTextMessage(getConnection("phone"), text);
         if (memorize)
