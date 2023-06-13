@@ -76,12 +76,11 @@
             <artifactId>mitems-client</artifactId>
             <version>5.0.2</version>
         </dependency>
-        <!-- TODO: Fix.
         <dependency>
             <groupId>com.mindsmiths</groupId>
             <artifactId>moli-dashboard-client</artifactId>
             <version>latest</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.mindsmiths</groupId>
             <artifactId>gpt3-adapter-client</artifactId>
