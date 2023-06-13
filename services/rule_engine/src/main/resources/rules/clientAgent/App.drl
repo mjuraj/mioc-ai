@@ -1,0 +1,83 @@
+package rules.clientAgent;
+
+import com.mindsmiths.armory.event.UserConnected
+import agents.ClientAgent
+import com.mindsmiths.armory.event.Submit
+import java.util.Map
+import com.mindsmiths.dashboard.models.Client
+import com.mindsmiths.scheduling.signals.GetAvailableTimeslots
+import com.mindsmiths.calendarAdapter.reply.Availability
+import java.time.LocalDateTime
+import com.mindsmiths.scheduling.signals.ScheduleEvent
+import com.mindsmiths.sdk.utils.Utils
+import com.mindsmiths.calendarAdapter.reply.EventCreated
+import utils.TimeFormatUtils
+import com.mindsmiths.calendarAdapter.api.Timespan
+import com.mindsmiths.sdk.utils.templating.Templating
+import com.mindsmiths.armory.Screen
+import com.mindsmiths.armory.component.Title
+import com.mindsmiths.mitems.Mitems
+import com.mindsmiths.armory.component.CustomComponent
+import com.mindsmiths.armory.component.SubmitButton
+import com.mindsmiths.ruleEngine.util.Log
+
+rule "Start app"
+    when
+        signal: UserConnected() from entry-point "signals"
+        agent: ClientAgent()
+    then
+        agent.show("landing");
+        delete(signal);
+end
+
+
+// Help
+
+rule "Schedule help"
+    when
+        signal: Submit(buttonId == "help") from entry-point "signals"
+        agent: ClientAgent(schedulingAgentId: schedulingAgentId)
+    then
+        modify(agent) { setSchedulingFlow("appHelp") };
+        agent.send(schedulingAgentId, new GetAvailableTimeslots());
+        delete(signal);
+end
+
+
+rule "Offer timeslots for help"
+    when
+        availability: Availability(timeslots : timeslots) from entry-point "signals"
+        agent: ClientAgent(schedulingFlow == "appHelp")
+    then
+        timeslots = agent.chooseTimeslots(timeslots, 10);
+        agent.showScreens(new Screen("help")
+            .add(new Title(Mitems.getText("power-menu.scheduling.title")))
+            .add(new CustomComponent("AvailableSchedules", Map.of("inputId", "available-schedules", "options", timeslots)))
+            .add(new SubmitButton("schedule", "Schedule")));
+        delete(availability);
+end
+
+rule "Timeslot chosen for help"
+    when
+        submit: Submit(buttonId == "schedule") from entry-point "signals"
+        agent: ClientAgent(timeZone: timeZone, schedulingAgentId: schedulingAgentId, email: getConnection("email"),
+                           schedulingFlow == "appHelp")
+    then
+        modify(agent) {
+            setSchedulingMessageId(null)
+        }
+        LocalDateTime start = Utils.strToDatetime(submit.getParamAsString("available-schedules"));
+        agent.send(schedulingAgentId, new ScheduleEvent(start, timeZone, email, agent.fillContext()));
+        delete(submit);
+end
+
+rule "Help scheduled"
+    when
+        e: EventCreated(event : event) from entry-point "signals"
+        agent: ClientAgent(manager: manager, timeZone : timeZone, schedulingFlow == "appHelp")
+    then
+        Map<String, Object> context = agent.fillContext();
+        context.put("timeslot", TimeFormatUtils.formatDatetime(((Timespan) event.getWhen()).getStartTime(), timeZone));
+        agent.show("call-scheduled", context);
+        delete(e);
+end

@@ -1,0 +1,124 @@
+package rules.clientAgent;
+
+import agents.ClientAgent
+import messages.ReceivedMessage;
+
+import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.util.Log;
+import com.mindsmiths.ruleEngine.util.Agents;
+import com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage
+import com.mindsmiths.dashboard.models.AssistantConfiguration
+import java.util.stream.Collectors
+import messages.SentMessage
+import com.mindsmiths.dashboard.models.Client
+import com.mindsmiths.mitems.Mitems
+import com.mindsmiths.sdk.core.db.Database
+import signals.ManagerDataRequest
+import com.mindsmiths.infobipAdapter.api.InfobipResult
+import hitl.HITLPlugin
+import com.mindsmiths.discordAdapter.callbacks.DiscordChannelCreated
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue
+import signals.NotYourClient
+import com.mongodb.client.model.Filters
+import com.mindsmiths.ruleEngine.model.Agent
+import java.util.ArrayList
+
+rule "Client created or updated"
+    salience 1000
+    when
+        client: Client() from entry-point "signals"
+        agent: ClientAgent()
+    then
+        modify(agent) {
+            clientUpdate(client)
+        }
+        delete(client);
+end
+
+rule "Set default assistant configuration"
+    salience 1000
+    when
+        agent: ClientAgent(assistantConfiguration == null)
+    then
+        ArrayList<AssistantConfiguration> available = AssistantConfiguration.getAll();
+        AssistantConfiguration defaultConfig = Database.get(Filters.eq("defaultAssistant", true), AssistantConfiguration.class);
+        Log.info("This is running!");
+        Log.info("config: " + defaultConfig);
+        Log.info("config: " + available);
+        modify(agent) { setAssistantConfiguration(defaultConfig) };
+end
+
+rule "Update assistant configuration"
+    salience 1000
+    when
+        config: AssistantConfiguration() from entry-point "signals"
+        agent: ClientAgent()
+    then
+        modify(agent) { setAssistantConfiguration(config) };
+        delete(config);
+end
+
+rule "Set default manager"
+    salience 1000
+    when
+        agent: ClientAgent(assistantConfiguration != null, client != null, manager == null, waitingForManager == false)
+    then
+        Agent manager = Agents.getByConnection("dashboardId", agent.getAssistantConfiguration().getDefaultManagerId()).get(0);
+        agent.send(manager.getId(), new ManagerDataRequest());
+        modify(agent) { setWaitingForManager(true) };
+end
+
+rule "Got manager data response"
+    salience 1000
+    when
+        request: ManagerDataRequest(manager: manager, categoryId: categoryId, schedulingAgentId: schedulingAgentId) from entry-point "signals"
+        agent: ClientAgent(hitlChannelId: hitlChannelId)
+        Client(firstName: firstName, lastName: lastName, phoneNumber: phoneNumber) from agent.client
+    then
+        if (hitlChannelId == null) {
+            String channelName = firstName + "-" + lastName;
+            if (lastName == null)
+                channelName = firstName;
+            HITLPlugin.createChannel(String.format("%s-%s", channelName, phoneNumber), categoryId);
+            agent.setHitlChannelId("creating");
+        }
+        agent.setManager(manager);
+        agent.setSchedulingAgentId(schedulingAgentId);
+        agent.setWaitingForManager(false);
+        update(agent);
+        delete(request);
+end
+
+rule "Got manager data response from other manager"
+    salience 1001
+    when
+        request: ManagerDataRequest() from entry-point "signals"
+        agent: ClientAgent(manager!.id != request.manager.id)
+    then
+        agent.send(request.getFrom(), new NotYourClient());
+        delete(request);
+end
+
+
+rule "Discord channel is created"
+    salience 1000
+    when
+        signal: DiscordChannelCreated(channelId: channelId) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        modify(agent){
+            setHitlChannelId(channelId)
+        }
+        delete(signal);
+end
+
+rule "Register whatsapp message id"
+    salience 1000
+    when
+        agent: ChatAgent(schedulingMessageId: schedulingMessageId)
+        InfobipResult(replyTo.id == schedulingMessageId, whatsappMessageId: message.messageId) from entry-point "signals"
+    then
+        modify(agent){
+            setSchedulingMessageId(whatsappMessageId)
+        }
+end

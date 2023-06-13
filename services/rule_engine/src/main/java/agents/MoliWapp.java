@@ -152,25 +152,25 @@ public class MoliWapp extends Agent {
                 screens,
                 new Screen("Welcome")
                     .add(new Header("logo.png", false))
-                    .add(new Image("public/sovica.png", true))
+                    .add(new Image("public/sovica.png"))
                     .add(new Title("Prvo kratko upoznavanje, a onda želim čuti tvoje mišljenje ;)"))
                     .add(new SubmitButton("welcomeStarted", "Idemo!", "askForName")),
                 new Screen("askForName")
                     .add(new Header("logo.png", false))
-                    .add(new Image("public/sovica.png", true))
+                    .add(new Image("public/sovica.png"))
                     .add(new Title("Koje je tvoje ime?"))
                     .add(new Input("name", "Moli", true))
                     .add(new SubmitButton("askForNameFinished", "Nastavimo!", "askForGender")),
                 new Screen("askForGender")
                     .add(new Header("logo.png", true)) 
                     .add(new Title("Jesi li miočanin ili miočanka?")) 
-                    .add(new Image("public/sovica.png", true))
+                    .add(new Image("public/sovica.png"))
                     .add(new SubmitButton("askForGenderStartedm", "Miočanin", "askForAge")) //uhvati podatke i salji Ravnatelj agentu
                     .add(new SubmitButton("askForGenderStartedf", "Miočanka", "askForAge")),
                 new Screen("askForAge")
                     .add(new Header("logo.png", true)) 
                     .add(new Title("Koji si razred?"))
-                    .add(new Image("public/sovica.png", true))
+                    .add(new Image("public/sovica.png"))
                     .add(new SubmitButton("askForAgeStarted1", "Prvi", "askForRating")) //uhvati podatke i salji Ravnatelj agentu
                     .add(new SubmitButton("askForAgeStarted2", "Drugi", "askForRating"))
                     .add(new SubmitButton("askForAgeStarted3", "Treći", "askForRating"))
@@ -179,7 +179,7 @@ public class MoliWapp extends Agent {
                     .add(new Header("logo.png", true)) 
                     .add(new Title("Koje slovo?"))
                     .add(new Description("Odaberi samo jedno slovo."))
-                    .add(new Image("public/sovica.png", true))
+                    .add(new Image("public/sovica.png"))
                     .add(new CloudSelect("classLetter", Map.of("A", "A", "B", "B", "C", "C", "D", "D", "E", "E", "F", "F", "G", "G", "H", "H")))
                     .add(new SubmitButton("askForClassLetterSubmit", "Nastavimo!", "askForRating"))
             );
@@ -188,7 +188,7 @@ public class MoliWapp extends Agent {
                 screens,
                 new Screen("Welcome")
                     .add(new Header("logo.png", false))
-                    .add(new Image("public/sovica.png", true))
+                    .add(new Image("public/sovica.png"))
                     .add(new Title("Želim čuti tvoje mišljenje o školi 😊"))
                     .add(new SubmitButton("welcomeStarted", "Idemo!", "askForRating"))
             );
@@ -200,7 +200,7 @@ public class MoliWapp extends Agent {
                 .add(new Header("logo.png", true)) 
                 .add(new Title("Kolika je vjerojatnost da bi preporučio MIOC frendu ili frendici?"))
                 .add(new Description("Označi odgovor na skali od 0 do 10. 0 znači da ne bi uopće preporučio, a 10 da bi sigurno preporučio."))
-                .add(new CustomComponent("Slider").addParam("inputId", "nps"))
+                .add(new CustomComponent("Slider").setParam("inputId", "nps"))
                 .add(new SubmitButton("askForRatingStarted", "Idemo!", "askForFeedback")), //dodaj slider
             new Screen("askForFeedback")
                 .add(new Header("logo.png", true))
@@ -209,7 +209,7 @@ public class MoliWapp extends Agent {
                 .add(new TextArea("feedback", "Napiši svoj kometar..."))
                 .add(new SubmitButton("askForFeedbackSubmit", "Pošalji", "endScreen")),
             new Screen("endScreen")
-                .add(new Image("public/srce.png", false))
+                .add(new Image("public/srce.png"))
                 .add(new Title("Tvoj odgovor je poslan!"))
                 .add(new Description("Hvala ti na odgovoru! Sada se možeš vratiti na WhatsApp."))
         );

@@ -1,3 +1,4 @@
+import agents.HITL;
 import agents.Principal;
 import agents.Smith;
 import config.Settings;
@@ -45,6 +46,9 @@ public class Runner extends RuleEngineService {
 
         if (!Agents.exists("PRINCIPAL"))
             Agents.createAgent(new Principal());
+
+        if (!Agents.exists(HITL.ID))
+            Agents.createAgent(new HITL());
     }
 
     public static void main(String[] args) {

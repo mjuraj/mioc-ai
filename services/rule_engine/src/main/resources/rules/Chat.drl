@@ -1,0 +1,126 @@
+package rules;
+
+import com.mindsmiths.sdk.core.db.Database;
+import com.mindsmiths.dashboard.models.Client;
+import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.util.Log;
+import com.mindsmiths.ruleEngine.util.Agents;
+import com.mindsmiths.dashboard.DashboardAPI;
+import com.mindsmiths.dashboard.models.AssistantConfiguration;
+import com.mindsmiths.textembedder.reply.EmbeddingSearchResult;
+import com.mindsmiths.mitems.Mitems;
+import com.mindsmiths.sdk.utils.templating.Templating;
+import com.mindsmiths.discordAdapter.components.Button;
+
+import com.mindsmiths.sdk.utils.Utils;
+import static utils.TextUtils.trimText;
+import agents.ChatAgent;
+import messages.ReceivedMessage;
+import messages.GPTResult;
+import messages.DiscordButtonAnswer;
+import messages.SentMessage;
+
+import java.util.Map;
+import java.util.List;
+import utils.Settings;
+import hitl.HITLPlugin
+import signals.DiscordButtonMessageRequest
+
+
+rule "Assistant switch"
+    salience 250
+    when
+        signal: ReceivedMessage(text.toLowerCase().startsWith("hi "), text: text) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        String name = text.substring(3).trim();
+        AssistantConfiguration config = agent.findAssistant(name);
+        if (config != null) {
+            agent.switchAgent(config);
+        }
+end
+
+// Communication for registered users
+
+rule "Create context for message"
+    when
+        message: ReceivedMessage(text: text) from entry-point "signals"
+        agent: ChatAgent(hitlProtocol == false)
+    then
+        agent.searchEmbeddings(text);
+        delete(message);
+        insert(message);
+end
+
+rule "Ask GPT for answer from context"
+    when
+        embResult: EmbeddingSearchResult(context: createContext()) from entry-point "signals"
+        message: ReceivedMessage(text: text)
+        agent: ChatAgent(messages: messages)
+    then
+        modify(agent){messages.add("User: " + text.trim())}
+        agent.askGPT(context);
+        delete(message);
+        delete(embResult);
+end
+
+rule "Send GPT response"
+    when
+        gptResult: GPTResult(text : text) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        agent.sendMessage(trimText(text), true);
+        agent.send("HITL", new DiscordButtonMessageRequest(text, List.of(new Button(agent.popPromptId(), "Explain"))));
+        delete(gptResult);
+end
+
+rule "Send prompt logs to Discord"
+    when
+        discordButtonAnswer: DiscordButtonAnswer(button: button) from entry-point "signals"
+        Button(buttonId: customId) from button
+        agent: ChatAgent()
+    then
+        for (String element : agent.getPromptFromCache(buttonId))
+            drools.getEntryPoint("signals").insert(new SentMessage(Utils.randomString(), element.trim()));
+        delete(discordButtonAnswer);
+end
+
+rule "Send answer unknown response"
+    salience 10
+    when
+        agent: ChatAgent(messages: messages)
+        gptResult: GPTResult(getText().toLowerCase.contains("i don't know") || getText().trim().equals("")) from entry-point "signals"
+    then
+        agent.sendMessage(agent.pickRandomMitemsText("prompts.custom-responses"));
+        modify(agent){
+            messages.remove(messages.size() - 1);
+        }
+        delete(gptResult);
+end
+
+// Managing prompts and memory
+
+rule "Reset conversation"
+    salience 100
+    when
+        message: ReceivedMessage(text.equalsIgnoreCase("reset")) from entry-point "signals"
+        agent: ChatAgent()
+        unprocessedMessages: List() from collect(ReceivedMessage())
+    then
+        for (Object msg : unprocessedMessages) {
+            delete((ReceivedMessage) msg);
+        }
+        modify(agent){ reset() }
+        agent.sendMessage(Mitems.getText("onboarding.managing.reset"));
+        delete(message);
+end
+
+rule "Trim memory"
+    salience 100
+    when
+        agent: ChatAgent(messages : messages, messages.size() > 5)
+    then
+        modify(agent){
+            messages.remove(0)
+        }
+end

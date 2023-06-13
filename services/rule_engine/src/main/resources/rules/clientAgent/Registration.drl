@@ -1,0 +1,41 @@
+package rules.clientAgent;
+
+import com.mindsmiths.sdk.core.db.Database;
+import com.mindsmiths.dashboard.models.Client;
+import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.ruleEngine.util.Log;
+import com.mindsmiths.ruleEngine.util.Agents;
+import com.mindsmiths.dashboard.DashboardAPI;
+import com.mindsmiths.textembedder.reply.EmbeddingSearchResult;
+import com.mindsmiths.mitems.Mitems;
+import com.mindsmiths.sdk.utils.templating.Templating;
+
+import static utils.TextUtils.trimText;
+import agents.ClientAgent;
+import messages.ReceivedMessage;
+import messages.GPTResult;
+
+import java.util.Map;
+import java.util.List;
+import utils.Settings;
+import hitl.HITLPlugin;
+
+
+rule "Register client"
+    salience 500
+    when
+        message: ReceivedMessage(contactName: contactName) from entry-point "signals"
+        agent: ClientAgent(client == null, phone: getConnection("phone"), id: id)
+    then
+        String[] name = contactName.trim().split("\\s+", 2);
+        String firstName = name[0];
+        String lastName = name.length > 1 ? name[1] : "";
+
+        Client client = new Client(id, firstName, lastName, phone);
+        modify(agent) {
+            setClient(client),
+            askGPT("This is your first message with the client. Introduce yourself.")
+        };
+        DashboardAPI.updateOrCreateClient(client);
+        delete(message);
+end

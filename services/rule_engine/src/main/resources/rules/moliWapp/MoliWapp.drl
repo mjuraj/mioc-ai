@@ -50,33 +50,3 @@ rule "Send a new NPS message after 3 months"
             setRating(-1)
         }
 end
-
-rule "Send link to armory NPS screens after clicking on onboarding button in WhatsApp"
-    when
-        signal: InfobipReceivedMessage(message.type == MessageType.INTERACTIVE_BUTTON_REPLY, 
-            message.id == "GET_ARMORY_LINK") from entry-point "signals"
-        agent: MoliWapp()
-    then
-        agent.sendNpsMessage();
-        delete(signal);
-end
-
-rule "Handle a user text message from WhatsApp"
-    when
-        signal: InfobipReceivedMessage(message.type == MessageType.TEXT,
-            payload: message) from entry-point "signals"
-        agent: MoliWapp()
-    then
-        agent.handleWhatsappTextMessage(payload);
-        delete(signal);
-end
-
-rule "Send conversation response"
-    when
-        gpt3Result: GPT3Completion() from entry-point "signals"
-        agent: MoliWapp()
-    then
-        modify(agent) {addMessageToMemory("Moli", gpt3Result.getBestResponse())};
-        agent.sendWhatsappTextMessage(gpt3Result.getBestResponse());
-        delete(gpt3Result);
-end

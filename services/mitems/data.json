@@ -1,0 +1,191 @@
+[
+  {
+    "title": "Manager",
+    "description": "",
+    "items": [
+      {
+        "name": "Client onboarding",
+        "elements": [
+          {
+            "description": "Start onboarding message",
+            "type": "TEXT",
+            "content": "To onboard a new client, just click here: {{ onboardingUrl }}"
+          }
+        ]
+      },
+      {
+        "name": "Scheduling",
+        "elements": [
+          {
+            "description": "Logo",
+            "type": "TEXT",
+            "content": "logo.png"
+          },
+          {
+            "description": "Title",
+            "type": "TEXT",
+            "content": "Your account is successfully authenticated 🥳"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Onboarding",
+    "description": "",
+    "items": [
+      {
+        "name": "Intro",
+        "elements": [
+          {
+            "description": "Welcome message",
+            "type": "TEXT",
+            "content": "Hi there! I'm Moli. I can help you with the following topics: MIOC.\nStart by typing Moli 🙂"
+          }
+        ]
+      },
+      {
+        "name": "Managing",
+        "elements": [
+          {
+            "description": "Prompt changed",
+            "type": "TEXT",
+            "content": "Prompt set to {{ configId }} "
+          },
+          {
+            "description": "Prompt not found",
+            "type": "TEXT",
+            "content": "Prompt {{ configId }} not found. Choose one of the available prompts by writing \"prompt \" followed by available prompt ids: {{ promptList }}"
+          },
+          {
+            "description": "Reset",
+            "type": "TEXT",
+            "content": "Conversation reset"
+          },
+          {
+            "description": "Send prompt ids",
+            "type": "TEXT",
+            "content": "Choose a new prompt by writing \"prompt\" and one of ids from the list: {{ promptList }} "
+          },
+          {
+            "description": "Unknown user",
+            "type": "TEXT",
+            "content": "Sorry, I don't know who you are. Please register first."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Power menu",
+    "description": "",
+    "items": [
+      {
+        "name": "About Policy",
+        "elements": [
+{
+            "description": "Text",
+            "type": "TEXT",
+            "content": "Feel free to ask me anything about one of these: MIOC"
+          }
+]
+      },
+      {
+        "name": "Power menu",
+        "elements": [
+          {
+            "description": "Options",
+            "type": "OPTIONS",
+            "content": "[{\"text\":\"Open app\",\"id\":\"open-app\"},{\"text\":\"Learn more\",\"id\":\"about-policy\"},{\"text\":\"Talk with {{ managerFirstName }}\",\"id\":\"schedule-a-call\"}]"
+          },
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "What would you like to do? 😊"
+          }
+        ]
+      },
+      {
+        "name": "App",
+        "elements": [
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "You can find the app here: {{ url }}"
+          }
+        ]
+      },
+      {
+        "name": "Scheduling",
+        "elements": [
+          {
+            "description": "Scheduled",
+            "type": "TEXT",
+            "content": "Success! Meeting with {{ managerFirstName }} scheduled on {{ time }}"
+          },
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "I got you! Let's schedule you a call with {{ managerFirstName }} 😊"
+          },
+          {
+            "description": "Title",
+            "type": "TEXT",
+            "content": "Pick time for a call"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Prompts",
+    "description": "",
+    "items": [
+      {
+        "name": "Custom responses",
+        "elements": [
+          {
+            "description": "Answer unknown",
+            "type": "TEXT",
+            "content": "Sorry, I'm not really an expert in that."
+          },
+          {
+            "description": "Answer unknown 2",
+            "type": "TEXT",
+            "content": "I'm afraid that's not something I can help you with."
+          },
+          {
+            "description": "Answer unknown 3",
+            "type": "TEXT",
+            "content": "That's outside my area of expertise."
+          }
+        ]
+      },
+      {
+        "name": "Prompt elements",
+        "elements": [
+          {
+            "description": "Context EN",
+            "type": "TEXT",
+            "content": "Context"
+          },
+          {
+            "description": "Context HR",
+            "type": "TEXT",
+            "content": "Kontekst"
+          },
+          {
+            "description": "Punctuation EN",
+            "type": "TEXT",
+            "content": "Finish messages in punctuation marks."
+          },
+          {
+            "description": "Punctuation HR",
+            "type": "TEXT",
+            "content": "Završavaj poruke interpunkcijskim znakovima."
+          }
+        ]
+      }
+    ]
+  }
+]

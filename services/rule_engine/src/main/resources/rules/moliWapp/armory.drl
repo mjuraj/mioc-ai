@@ -106,7 +106,7 @@ rule "User submits their class letter"
         signal: Submit(screenId == "askForClassLetter") from entry-point "signals"
         agent: MoliWapp()
     then
-        String letter = ((Collection<String>)signal.getParam("classLetter")).iterator().next();
+        String letter = signal.getParamAsList("classLetter", String.class).get(0);
         modify(agent) {
             setClassLetter(letter)
         };
@@ -120,7 +120,7 @@ rule "Rating"
         agent: MoliWapp()
     then
         modify(agent) {
-            setRating((Integer) signal.getParam("nps"))
+            setRating(signal.getParamAsInteger("nps"))
         };
         delete(signal)
 end

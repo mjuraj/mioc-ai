@@ -1,0 +1,101 @@
+package rules.clientAgent;
+
+import java.util.List
+
+import com.mindsmiths.armory.event.UserConnected
+import com.mindsmiths.armory.event.Submit
+import com.mindsmiths.sdk.core.db.Database
+
+import agents.ClientAgent
+import messages.ReceivedMessage
+import messages.ButtonAnswer
+import com.mongodb.client.model.Filters
+import com.mindsmiths.mitems.Mitems
+import com.mindsmiths.sdk.utils.Utils
+import com.mindsmiths.scheduling.signals.GetAvailableTimeslots
+import utils.TextUtils
+import com.mindsmiths.sdk.utils.templating.Templating
+import java.util.Map
+import utils.Settings
+import com.mindsmiths.calendarAdapter.reply.Availability
+import java.time.LocalDateTime
+import com.mindsmiths.scheduling.signals.ScheduleEvent
+import com.mindsmiths.dashboard.models.Client
+import com.mindsmiths.calendarAdapter.reply.EventCreated
+import utils.TimeFormatUtils
+import com.mindsmiths.calendarAdapter.api.Timespan
+
+
+rule "Show menu on keyword"
+    salience 200
+    when
+        signal: ReceivedMessage(text != null, (text.equalsIgnoreCase("menu") || text.toLowerCase() == "moli")) from entry-point "signals"
+        agent: ClientAgent(manager: manager != null, getConnection("email") != null)
+    then
+        agent.sendMessageWithButtons(Mitems.getText("power-menu.power-menu.text"), "power-menu.power-menu.options", agent.fillContext());
+        delete(signal);
+end
+
+rule "Open app"
+    when
+        signal: ButtonAnswer(answer == "open-app") from entry-point "signals"
+        agent: ClientAgent()
+    then
+        agent.sendMessage(Templating.recursiveRender(Mitems.getText("power-menu.app.text"), agent.fillContext()));
+        delete(signal);
+end
+
+rule "Ask about policy"
+    when
+        signal: ButtonAnswer(answer == "about-policy") from entry-point "signals"
+        agent: ClientAgent(schedulingAgentId: schedulingAgentId)
+    then
+        agent.sendMessage(Mitems.getText("power-menu.about-policy.text"));
+        delete(signal);
+end
+
+rule "Schedule a call"
+    when
+        signal: ButtonAnswer(answer == "schedule-a-call") from entry-point "signals"
+        agent: ClientAgent(schedulingAgentId: schedulingAgentId)
+    then
+        modify(agent) { setSchedulingFlow("powerMenu") };
+        agent.send(schedulingAgentId, new GetAvailableTimeslots());
+        delete(signal);
+end
+
+rule "Offer timeslots"
+    when
+        availability: Availability(timeslots : timeslots) from entry-point "signals"
+        agent: ClientAgent(schedulingFlow == "powerMenu")
+    then
+        agent.sendSchedulingMessage(Mitems.getText("power-menu.scheduling.text"),
+                                    Mitems.getText("power-menu.scheduling.title"),
+                                    timeslots);
+        delete(availability);
+end
+
+rule "Timeslot chosen"
+    when
+        submit: ButtonAnswer(answer : answer, replyTo : replyTo) from entry-point "signals"
+        agent: ClientAgent(timeZone: timeZone, schedulingAgentId: schedulingAgentId, email: getConnection("email"),
+                           schedulingMessageId == replyTo, schedulingFlow == "powerMenu")
+    then
+        modify(agent) {
+            setSchedulingMessageId(null)
+        }
+        LocalDateTime start = Utils.strToDatetime(answer);
+        agent.send(schedulingAgentId, new ScheduleEvent(start, timeZone, email, agent.fillContext()));
+        delete(submit);
+end
+
+rule "Event scheduled"
+    when
+        e: EventCreated(event : event) from entry-point "signals"
+        agent: ClientAgent(manager: manager, timeZone : timeZone, schedulingFlow == "powerMenu")
+    then
+        Map<String, Object> context = agent.fillContext();
+        context.put("time", TimeFormatUtils.formatDatetime(((Timespan) event.getWhen()).getStartTime(), timeZone));
+        agent.sendMessage(Templating.recursiveRender(Mitems.getText("power-menu.scheduling.scheduled"), context));
+        delete(e);
+end
