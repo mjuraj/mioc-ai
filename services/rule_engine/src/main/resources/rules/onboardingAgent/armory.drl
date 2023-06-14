@@ -1,0 +1,14 @@
+package rules.onboardingAgent;
+
+import com.mindsmiths.ruleEngine.model.Initialize;
+import com.mindsmiths.armory.event.UserConnected;
+import agents.OnboardingAgent;
+
+rule "Show Onboarding flow"
+    when
+        signal: UserConnected() from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        agent.showOnboardingFlow();
+        delete(signal);
+end
