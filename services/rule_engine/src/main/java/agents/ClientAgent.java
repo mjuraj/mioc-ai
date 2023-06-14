@@ -89,23 +89,27 @@ public class ClientAgent extends ChatAgent {
         ArmoryAPI.show(
             getConnection("armory"),
             new Screen("Welcome")
+                .setTemplate("CenteredContent")
                 .add(new Header("logo.png", false))
                 .add(new Image("public/sovica.png"))
                 .add(new Title("Želim čuti tvoje mišljenje o školi 😊"))
                 .add(new SubmitButton("welcomeStarted", "Idemo!", "askForRating")),
             new Screen("askForRating")
+                .setTemplate("CenteredContent")
                 .add(new Header("logo.png")) 
                 .add(new Title("Kolika je vjerojatnost da bi preporučio MIOC frendu ili frendici?"))
                 .add(new Description("Označi odgovor na skali od 0 do 10. 0 znači da ne bi uopće preporučio, a 10 da bi sigurno preporučio."))
                 .add(new CustomComponent("Slider").setParam("inputId", "nps"))
                 .add(new SubmitButton("askForRatingStarted", "Idemo!", "askForFeedback")), //dodaj slider
             new Screen("askForFeedback")
+                .setTemplate("CenteredContent")
                 .add(new Header("logo.png", true))
                 .add(new Title("Zašto?"))
                 .add(new Description("Slobodno napiši zašto si se odlučio za tu ocjenu i što možemo učiniti da bi ona bila bolja."))
                 .add(new TextArea("feedback", "Napiši svoj kometar..."))
                 .add(new SubmitButton("askForFeedbackSubmit", "Pošalji", "endScreen")),
             new Screen("endScreen")
+                .setTemplate("CenteredContent")
                 .add(new Image("public/srce.png"))
                 .add(new Title("Tvoj odgovor je poslan!"))
                 .add(new Description("Hvala ti na odgovoru! Sada se možeš vratiti na WhatsApp."))
