@@ -76,11 +76,11 @@ public class Smith extends Agent {
         }
     }
 
-    public void addReviewToSheet(String phone, String gender, Integer age, Integer rating, String feedback, Long timestamp) {
-        String range = String.format("Odgovori!A%d:F%d", nextAnsRow, nextAnsRow);
-        List<String> data = List.of(phone, gender, String.valueOf(age), String.valueOf(rating), feedback, String.valueOf(timestamp));
+    public void addReviewToSheet(String gender, Integer age, Integer rating, String feedback, Long timestamp) {
+        String range = String.format("Odgovori!A%d:E%d", nextAnsRow, nextAnsRow);
+        List<String> data = List.of(gender, String.valueOf(age), String.valueOf(rating), feedback, String.valueOf(timestamp));
         List<List<String>> values = List.of(data);
-        GSheetsAdapterAPI.updateSheet(values, range); //TODO: replace mail with phone numbers
+        GSheetsAdapterAPI.updateSheet(values, range);
         nextAnsRow++;
     }
 }

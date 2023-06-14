@@ -36,7 +36,6 @@ public class ClientAgent extends ChatAgent {
     String classLetter;
 
     Integer rating;
-    String feedback;
 
     boolean npsReminderSent = false;
     LocalDateTime lastNpsSent = null;

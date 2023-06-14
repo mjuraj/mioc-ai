@@ -41,7 +41,6 @@ rule "Send a first NPS message"
             sendContextMessage(Mitems.getText("nps.introduction-message.first-time")),
             setLastNpsSent(Utils.now()),
             setNpsReminderSent(false),
-            setFeedback(""),
             setRating(null)
         }
 end
@@ -55,7 +54,6 @@ rule "Send a new NPS message after 3 months"
             sendContextMessage(Mitems.getText("nps.introduction-message.text")),
             setLastNpsSent(Utils.now()),
             setNpsReminderSent(false),
-            setFeedback(""),
             setRating(null)
         }
 end
@@ -75,16 +73,14 @@ end
 // User inputted feedback on screen "askForFeedback"
 rule "Feedback"
     when
-        signal: Submit(textareaInput: getParamAsString("feedback"), screenId == "askForFeedback") from entry-point "signals"
+        signal: Submit(feedback: getParamAsString("feedback"), screenId == "askForFeedback") from entry-point "signals"
         agent: ClientAgent()
     then
-        String feedback = signal.getParamAsString("feedback");
-        if(feedback == null)
+        if (feedback == null)
             feedback = "";
             
-        agent.send("SMITH", new AddReview(agent.getId(), agent.getGender(), agent.getAge(), agent.getRating(), agent.getFeedback(), Utils.now()));
+        agent.send("SMITH", new AddReview(agent.getGender(), agent.getAge(), agent.getRating(), feedback, Utils.now()));
         modify(agent) {
-            setFeedback(feedback),
             rawGPT3Request(Mitems.getText("nps.thanks.prompt"), 0.3)
         };
 
