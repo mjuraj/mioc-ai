@@ -59,6 +59,7 @@ public class ClientAgent extends ChatAgent {
             setConnection("armory", Utils.randomString());
 
         setConnection("dashboardId", client.getId());
+        setConnection("phone", client.getPhoneNumber());
         if (client.getEmail() != null) setConnection("email", client.getEmail());
         if (client.getAssistantConfigurationId() != null)
             setConnection("assistant", client.getAssistantConfigurationId());

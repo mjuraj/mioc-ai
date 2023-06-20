@@ -1,4 +1,4 @@
-import agents.ChatAgent;
+import agents.ClientAgent;
 import agents.HITL;
 import agents.ManagerAgent;
 import agents.OnboardingAgent;
@@ -89,7 +89,7 @@ public class Runner extends RuleEngineService {
         configureSignals(Events.on(DiscordButtonPressed.class).sendTo("HITL"));
         configureSignals(
                 DataChanges.on(Client.class).sendTo(
-                        (c, ct) -> getAgentByIdOrPhone(ChatAgent.class, c, ct, c.getPhoneNumber())
+                        (c, ct) -> getAgentByIdOrPhone(ClientAgent.class, c, ct, c.getPhoneNumber())
                 ),
                 DataChanges.on(Manager.class).sendTo(
                         (m, ct) -> getAgentByIdOrPhone(ManagerAgent.class, m, ct, m.getPhoneNumber())
