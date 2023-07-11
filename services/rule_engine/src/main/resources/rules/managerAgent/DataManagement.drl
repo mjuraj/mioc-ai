@@ -1,0 +1,90 @@
+package rules.managerAgent;
+import com.mindsmiths.dashboard.models.Manager
+import agents.ManagerAgent
+import signals.ManagerDataRequest
+import hitl.HITLPlugin
+import com.mindsmiths.discordAdapter.callbacks.DiscordCategoryCreated
+import signals.NotYourClient
+import com.mindsmiths.dashboard.models.AssistantConfiguration
+import com.mindsmiths.sdk.core.db.Database
+import com.mongodb.client.model.Filters
+import com.mindsmiths.ruleEngine.util.Log
+
+
+rule "Manager created or updated"
+    when
+        manager: Manager() from entry-point "signals"
+        agent: ManagerAgent()
+    then
+        modify(agent) {
+            managerUpdate(manager)
+        }
+        delete(manager);
+end
+
+rule "Set default assistant configuration"
+    salience 1000
+    when
+        agent: ManagerAgent(assistantConfiguration == null)
+    then
+        AssistantConfiguration defaultConfig = Database.get(Filters.eq("defaultAssistant", true), AssistantConfiguration.class);
+        if (defaultConfig != null) {
+            modify(agent) { setAssistantConfiguration(defaultConfig) };
+        }
+end
+
+rule "Update assistant configuration"
+    salience 1000
+    when
+        config: AssistantConfiguration() from entry-point "signals"
+        agent: ManagerAgent()
+    then
+        modify(agent) { setAssistantConfiguration(config) };
+        delete(config);
+end
+
+rule "Send category creation request"
+    when
+        agent: ManagerAgent(categoryId == null, pendingCategory == false)
+        Manager(firstName: firstName, lastName: lastName) from agent.manager
+    then
+        modify(agent) {
+            setPendingCategory(true)
+        }
+        HITLPlugin.createCategory(firstName + " " + lastName);
+end
+
+rule "Discord category created"
+    when
+        agent: ManagerAgent()
+        signal: DiscordCategoryCreated(categoryId: categoryId) from entry-point "signals"
+    then
+        modify(agent) {
+            setCategoryId(categoryId)
+        }
+        delete(signal);
+end
+
+
+rule "Got manager data request"
+    when
+        request: ManagerDataRequest() from entry-point "signals"
+        agent: ManagerAgent(categoryId: categoryId, clients: clients, schedulingAgentId: schedulingAgentId)
+    then
+        modify(agent) {
+            clients.add(request.getFrom())
+        }
+        agent.send(request.getFrom(), new ManagerDataRequest(agent.getManager(), categoryId, schedulingAgentId));
+        delete(request);
+end
+
+rule "Got not your client"
+    when
+        request: NotYourClient() from entry-point "signals"
+        agent: ManagerAgent(clients: clients)
+    then
+        modify(agent) {
+            clients.remove(request.getFrom())
+        }
+        delete(request);
+end

@@ -32,3 +32,22 @@ services:
     port: 8100
     env:
       SITE_URL: '{{ env.CONTROL_PANEL_URL | default("http://localhost:8100", true) }}'
+  infobip-adapter:
+    command:
+      run: "uvicorn infobip_adapter.service:app --port=8002"
+      cwd: "."
+    port: 8002
+  dashboard:
+    env:
+      SITE_URL: '{{ env.DASHBOARD_SITE_URL | default("http://localhost:8001", true) }}'
+    port: 8001
+  calendar-adapter:
+    port: 8003
+    command:
+      run: "uvicorn calendar_adapter.service:app --port=8003"
+    env:
+      SERVICE_HOST: 'http://localhost:8003'
+  mitems:
+    env:
+      SITE_URL: localhost:8004
+    port: 8004

@@ -31,31 +31,66 @@
 		</repository>
 	</repositories>
 	<dependencies>
-		<dependency>
-			<groupId>com.mindsmiths</groupId>
-			<artifactId>rule-engine</artifactId>
-			<version>5.0.10</version>
-		</dependency>
-		<dependency>
-			<groupId>com.mindsmiths</groupId>
-			<artifactId>armory-client</artifactId>
-			<version>5.1.1</version>
-		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>rule-engine</artifactId>
+            <version>5.0.12</version>
+        </dependency>
+        <dependency>
 			<groupId>com.mindsmiths</groupId>
 			<artifactId>email-adapter-client</artifactId>
 			<version>5.0.2</version>
 		</dependency>
-		<dependency>
+        <dependency>
 			<groupId>com.mindsmiths</groupId>
 			<artifactId>gsheets-adapter-client</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.mindsmiths</groupId>
-			<artifactId>gpt3-adapter-client</artifactId>
-			<version>5.0.0</version>
-		</dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>control-panel-client</artifactId>
+            <version>0.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>infobip-adapter-client</artifactId>
+            <version>5.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>armory-client</artifactId>
+            <version>5.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>scheduling</artifactId>
+            <version>0.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>text-embedder-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>mitems-client</artifactId>
+            <version>5.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>moli-dashboard-client</artifactId>
+            <version>latest</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>gpt3-adapter-client</artifactId>
+            <version>5.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mindsmiths</groupId>
+            <artifactId>discord-adapter-client</artifactId>
+            <version>5.1.1</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<finalName>app</finalName>
@@ -121,6 +156,7 @@
 				<version>3.0.0-M7</version>
 				<configuration>
 					<systemPropertyVariables>
+                        <projectSlug>moli</projectSlug>
 						<buildDirectory>${project.build.directory}</buildDirectory>
 					</systemPropertyVariables>
 					<useSystemClassLoader>false</useSystemClassLoader>

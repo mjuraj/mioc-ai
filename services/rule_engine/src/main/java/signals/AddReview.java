@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddReview extends Message {
-    String email;
     String gender;
     Integer age;
     Integer rating;

@@ -1,0 +1,178 @@
+
+{% extends 'admin/base.html' %}
+{% load i18n static jet_tags %}
+{% block html %}{{ block.super }}
+<script src="{% url 'jet:jsi18n' %}"></script>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .upload-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+        }
+
+        .upload-container input#files {
+            border: 1px solid #92b0b3;
+            background: #f1f1f1;
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            padding: 100px 0px 100px 250px;
+            width: 500px;
+        }
+
+        .upload-container input#files:hover {
+            background: #ddd;
+        }
+
+        .upload-container::before {
+            content: "Drag and Drop files here. ";
+            color: #3f8188;
+            font-weight: 900;
+            padding: -100px;
+        }
+
+        .upload-btn {
+            margin-top: 8px;
+            padding: 7px 20px;
+        }
+
+        #file-upload {
+            padding: 2rem;
+        }
+
+        #file-upload > input {
+            margin: 1rem 0;
+        }
+
+        #file-upload > input[type="submit"] {
+            padding: 1rem 10rem;
+            line-height: 0;
+            font-weight: bold;
+        }
+
+        #upload-status {
+            display: none;
+        }
+
+        #upload-done {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<form action="/knowledge/upload" enctype="multipart/form-data" method="POST" id="file-upload"
+      class="upload-container">
+    {% csrf_token %}
+    <input type="file" id="files" name="files" multiple/>
+    <input type="submit" value="Submit">
+    <div class="muted" id="upload-status">
+        Uploaded: <span id="uploaded-count"></span>/<span id="all-count"></span>
+    </div>
+    <p id="upload-done"></p>
+
+
+</form>
+<script type="application/javascript">
+    var uploadedCount = 0;
+    django.jQuery("#file-upload").submit(function (e) {
+        e.preventDefault();
+        var files = Array.from(django.jQuery(this.files).prop('files'));
+        django.jQuery("#upload-status").show();
+        django.jQuery("#all-count").text(files.length);
+        uploadFiles(files);
+    });
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    let csrftoken = getCookie('csrftoken');
+
+    function uploadFiles(files) {
+        uploadedCount = 0;
+        django.jQuery('#uploaded-count').text(uploadedCount);
+        django.jQuery('#upload-done').hide();
+        django.jQuery('#upload-status').show();
+        files.forEach(function (file) {
+            uploadFile(file);
+        });
+    }
+
+    function uploadFile(file) {
+        var chunkSize = 1024 * 900; // limit is 1MB but we reserved some space for other data (file name, is_last_chunk)
+        var totalChunks = Math.ceil(file.size / chunkSize);
+        var chunkIndex = 0;
+        var retryCount = 0;
+
+        function uploadChunk() {
+            var formData = new FormData();
+            var chunk = file.slice(chunkIndex * chunkSize, (chunkIndex + 1) * chunkSize);
+            formData.append("is_last_chunk", chunkIndex + 1 === totalChunks);
+            formData.append("chunk", chunk);
+            formData.append("file_name", file.name);
+            django.jQuery.ajax({
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                url: "/knowledge/upload",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log("Chunk uploaded successfully");
+
+                    chunkIndex++;
+                    if (chunkIndex < totalChunks) {
+                        retryCount = 0;
+                        uploadChunk();
+                    } else {
+                        console.log("File uploaded completely");
+                        django.jQuery('#uploaded-count').text(++uploadedCount);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error uploading chunk:", error);
+                    retryCount++;
+                    if (retryCount > 3) {
+                        console.error("Max retry count reached. Aborting upload.");
+                        django.jQuery('#upload-done').text('Uploading failed.').css('color', 'red').show();
+                        return;
+                    }
+                    uploadChunk();
+                }
+            });
+        };
+        uploadChunk();
+    }
+</script>
+</body>
+</html>
+{% endblock %}
+
+{% block blockbots %}{{ block.super }}
+
+<script src="{% static 'admin/js/vendor/jquery/jquery.js' as url %}{{ url|jet_append_version }}"
+        type="text/javascript"></script>
+<script src="{% static 'admin/js/jquery.init.js' as url %}{{ url|jet_append_version }}"></script>
+{% endblock %}
+

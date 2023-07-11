@@ -1,0 +1,105 @@
+package rules.managerAgent;
+
+import java.util.Map
+
+import com.mindsmiths.sdk.utils.Utils
+import com.mindsmiths.ruleEngine.util.Agents
+import com.mindsmiths.ruleEngine.model.Agent
+import com.mindsmiths.armory.event.UserConnected
+import com.mindsmiths.armory.event.Submit
+import com.mindsmiths.armory.ArmoryAPI
+import com.mindsmiths.armory.Screen
+import com.mindsmiths.armory.component.SubmitButton
+import com.mindsmiths.armory.component.Title
+import com.mindsmiths.armory.component.Input
+import com.mindsmiths.armory.component.CustomComponent
+import com.mindsmiths.scheduling.agents.SchedulingAgent
+import com.mindsmiths.scheduling.signals.SetScheduleConfiguration
+import com.mindsmiths.scheduling.models.ScheduleConfiguration
+import com.mindsmiths.scheduling.signals.ScheduleEvent
+
+import agents.ManagerAgent
+import com.mindsmiths.calendarAdapter.requests.GetAuthUrl
+import com.mindsmiths.calendarAdapter.api.EmailProvider
+import com.mindsmiths.calendarAdapter.reply.AuthUrl
+import com.mindsmiths.scheduling.signals.AccountAuthenticated
+import java.util.List
+import com.mindsmiths.calendarAdapter.api.OpenHours
+import com.mindsmiths.calendarAdapter.api.Day
+import com.mindsmiths.scheduling.signals.GetAvailableTimeslots
+import java.time.LocalTime
+import com.mindsmiths.mitems.Mitems
+import com.mindsmiths.sdk.utils.templating.Templating
+import com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage
+import messages.ButtonAnswer
+import com.mindsmiths.calendarAdapter.api.Timespan
+import com.mindsmiths.dashboard.models.Manager
+import com.mindsmiths.dashboard.DashboardAPI
+
+rule "Create armory connection"
+    salience 100
+    when
+        agent: ManagerAgent(getConnection("armory") == null)
+    then
+        modify(agent){
+            setConnection("armory", agent.getId())
+        }
+end
+
+rule "Create scheduling agent"
+    salience 1000
+    when
+        agent: ManagerAgent(schedulingAgentId == null)
+        manager: Manager(email : email, firstName : firstName) from agent.manager
+    then
+        Agent schedulingAgent = new SchedulingAgent(email, agent.getScheduleConfiguration(firstName, email));
+        Agents.createAgent(schedulingAgent);
+        modify(agent) { setSchedulingAgentId(schedulingAgent.getId()) };
+end
+
+rule "Ask for auth url"
+    when
+        agent: ManagerAgent(schedulingAgentId: schedulingAgentId, pendingAuth == false)
+        manager: Manager(authUrl == null, email : email != null, emailProvider: emailProvider != null) from agent.manager
+    then
+        modify(agent) {
+            setPendingAuth(true),
+            askForAuthUrl(email, emailProvider)
+        }
+end
+
+rule "Got auth URL"
+    when
+        auth: AuthUrl(url: url) from entry-point "signals"
+        agent: ManagerAgent()
+    then
+        modify(agent) {
+            setPendingAuth(false),
+            getManager().setAuthUrl(url)
+        };
+        DashboardAPI.updateOrCreateManager(agent.getManager());
+        delete(auth);
+end
+
+rule "User connected with auth token"
+    salience 10
+    when
+        conn: UserConnected(params != null, accessToken: getParamAsString("access_token") != null) from entry-point "signals"
+        agent: ManagerAgent(schedulingAgentId: schedulingAgentId)
+    then
+        agent.showAuthSuccessScreen();
+        modify(agent) {
+            setAccessToken(accessToken),
+            getManager().setAuthenticated(true)
+        };
+        agent.send(schedulingAgentId, new AccountAuthenticated(
+            conn.getParamAsString("namespace_id"),
+            conn.getParamAsString("account_id"),
+            conn.getParamAsString("sid"),
+            accessToken,
+            conn.getParamAsString("provider"),
+            conn.getParamAsString("email_address")
+        ));
+        DashboardAPI.updateOrCreateManager(agent.getManager());
+        delete(conn);
+end

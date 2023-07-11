@@ -1,15 +1,22 @@
-com.mindsmiths.armory.event.UserConnected:
-  - !GetOrCreateAgentByConnection
-    connectionName: armory
-    connectionField: connectionId
-    agentType: agents.Moli
 com.mindsmiths.armory.event.Submit:
-  - !GetOrCreateAgentByConnection
+  - !GetAgentByConnection
     connectionName: armory
     connectionField: connectionId
-    agentType: agents.Moli
 com.mindsmiths.armory.event.UserDisconnected:
-  - !GetOrCreateAgentByConnection
+  - !GetAgentByConnection
     connectionName: armory
     connectionField: connectionId
-    agentType: agents.Moli
+com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage:
+  - !GetAgentByConnection
+    connectionName: phone
+    connectionField: from
+com.mindsmiths.infobipAdapter.models.InfobipSentMessage:
+  - !GetAgentByConnection
+    connectionName: phone
+    connectionField: to
+com.mindsmiths.discordAdapter.message.DiscordReceivedMessage:
+  - !AlwaysSendTo
+    agentId: "HITL"
+com.mindsmiths.discordAdapter.message.DiscordSentMessage:
+  - !AlwaysSendTo
+    agentId: "HITL"

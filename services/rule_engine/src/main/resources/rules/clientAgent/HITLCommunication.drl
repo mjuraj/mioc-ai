@@ -1,0 +1,70 @@
+package rules.clientAgent;
+
+import com.mindsmiths.ruleEngine.model.Heartbeat
+import com.mindsmiths.dashboard.models.Client
+import com.mindsmiths.ruleEngine.util.Log
+import com.mindsmiths.sdk.utils.Utils
+
+import agents.ChatAgent
+import messages.SentMessage
+import messages.ReceivedMessage
+import utils.Settings
+import messages.HITLMessage
+import hitl.HITLPlugin
+import messages.ButtonAnswer
+
+
+
+// HITL channel for registered user
+
+rule "Got message"
+    salience 1000
+    when
+        message: ReceivedMessage() from entry-point "signals"
+    then
+        HITLPlugin.registerMessage(message);
+end
+
+rule "Sent message"
+    salience 1000
+    when
+        message: SentMessage() from entry-point "signals"
+    then
+        HITLPlugin.registerMessage(message);
+end
+
+rule "Got button answer"
+    salience 1000
+    when
+        buttonAnswer: ButtonAnswer() from entry-point "signals"
+    then
+        HITLPlugin.registerButtonAnswer(buttonAnswer);
+end
+
+rule "Got reply from hitl"
+    when
+        message: HITLMessage(text: text) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        agent.sendMessage(text);
+        modify(agent){setHitlProtocol(true), setLastHitlReplyAt(Utils.now())};
+        delete(message);
+end
+
+rule "Expire HITL flow"
+    when
+        Heartbeat(now: timestamp) from entry-point "signals"
+        agent: ChatAgent(hitlProtocol == true, lastHitlReplyAt before[2m] now)
+    then
+        modify(agent){setHitlProtocol(false), setLastHitlReplyAt(null)};
+end
+
+rule "Exit HITL flow"
+    salience 100
+    when
+        message: HITLMessage(text: text, text.toLowerCase().startsWith("/end")) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        modify(agent){setHitlProtocol(false), setLastHitlReplyAt(null)};
+        delete(message);
+end

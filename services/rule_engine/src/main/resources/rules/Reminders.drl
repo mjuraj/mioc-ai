@@ -1,0 +1,52 @@
+package rules;
+
+import agents.ChatAgent;
+import messages.ReceivedMessage
+
+import com.mindsmiths.ruleEngine.model.Heartbeat;
+import com.mindsmiths.sdk.utils.templating.Templating
+import com.mindsmiths.mitems.Mitems
+import java.util.Map;
+import java.util.List;
+import utils.Settings
+import com.mindsmiths.textembedder.reply.EmbeddingSearchResult;
+import static utils.TextUtils.trimText;
+import signals.Reminder
+import messages.GPTResult
+import utils.TimeFormatUtils;
+
+
+rule "Process reminder"
+    salience 200
+    when
+        signal: ReceivedMessage(text.toLowerCase() contains "remind me", text: text) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        modify(agent) { messages.add("User: " + text.trim()) };
+        agent.processReminderQuery(text);
+        delete(signal);
+end
+
+rule "Store GPT reminder"
+    salience 50
+    when
+        gptResult: GPTResult(text.toLowerCase() contains "\"reminder\"", text : text) from entry-point "signals"
+        agent: ChatAgent()
+    then
+        Reminder reminder = agent.addReminder(text);
+        if (reminder != null)
+            agent.sendMessage("Ok, I'll remind you to " + reminder.getReminder() + " at " + TimeFormatUtils.formatDatetime(reminder.getDateTime(), agent.getTimeZone()) + ".", true);
+        else
+            agent.sendMessage("Sorry, I didn't understand that. Could you please rephrase?", true);
+        delete(gptResult);
+end
+
+rule "Send reminder"
+    when
+        Heartbeat(now: timestamp) from entry-point "signals"
+        agent: ChatAgent(reminders: reminders)
+        reminder: Reminder(dateTime < now) from reminders
+    then
+        agent.rawGPT3Request("Rephrase the following sentence:\nHey, just to remind you to " + reminder.getReminder(), 0.3);
+        modify(agent) { reminders.remove(reminder) };
+end

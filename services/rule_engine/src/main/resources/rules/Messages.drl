@@ -1,0 +1,94 @@
+package rules;
+
+import com.mindsmiths.infobipAdapter.api.MessageType
+import com.mindsmiths.infobipAdapter.models.InfobipReceivedMessage
+import com.mindsmiths.infobipAdapter.models.InfobipSentMessage
+
+import messages.*
+import com.mindsmiths.infobipAdapter.api.MessageContent
+import com.mindsmiths.infobipAdapter.api.TemplateMessage
+import java.util.Map
+import com.mindsmiths.infobipAdapter.api.MessageWithButtons
+import com.mindsmiths.ruleEngine.util.Log
+import com.mindsmiths.infobipAdapter.api.MessageWithInteractiveList
+
+import com.mindsmiths.gpt3.completion.GPT3Completion
+import com.mindsmiths.gpt3.chatCompletion.GPT3ChatCompletion
+
+
+
+rule "Received infobip message"
+    when
+        InfobipReceivedMessage(messageId: messageId, text: message.text,
+                               message.type == MessageType.TEXT, contactName: contact.name) from entry-point "signals"
+
+    then
+        drools.getEntryPoint("signals").insert(new ReceivedMessage(messageId, text, contactName));
+end
+
+
+rule "Received infobip interactive button answer"
+    when
+        InfobipReceivedMessage(message.type in (MessageType.INTERACTIVE_BUTTON_REPLY, MessageType.INTERACTIVE_LIST_REPLY),
+                               answer: message.id, buttonText : message.title, messageId: messageId,
+                               replyTo : message.context.id) from entry-point "signals"
+    then
+        drools.getEntryPoint("signals").insert(new ButtonAnswer(messageId, answer, replyTo, buttonText));
+end
+
+rule "Received infobip button answer"
+    when
+        InfobipReceivedMessage(answer: message.payload, messageId: messageId, replyTo : message.context.id,
+                               message.type == MessageType.BUTTON, buttonText : message.text) from entry-point "signals"
+    then
+        drools.getEntryPoint("signals").insert(new ButtonAnswer(messageId, answer, replyTo, buttonText));
+end
+
+//rule "Sent infobip message"
+//    when
+//        InfobipSentMessage(messageId: messageId, content.contentType == "message/text",
+//                           content : content) from entry-point "signals"
+//        MessageContent(text: text) from content
+//    then
+//        drools.getEntryPoint("signals").insert(new SentMessage(messageId, text));
+//end
+
+rule "Sent infobip interactive list"
+    when
+        InfobipSentMessage(messageId: messageId, content.contentType == "message/interactive/list",
+                           content : content) from entry-point "signals"
+        MessageWithInteractiveList(text: body.text) from content
+    then
+        drools.getEntryPoint("signals").insert(new SentMessage(messageId, text));
+end
+
+rule "Sent infobip template"
+    when
+        InfobipSentMessage(messageId: messageId, content.contentType == "message/template",
+                           content : content) from entry-point "signals"
+        TemplateMessage(templateName : templateName, templateData : templateData) from content
+    then
+        drools.getEntryPoint("signals").insert(new SentMessage(messageId, "Template message"));
+end
+
+rule "Sent infobip message with buttons"
+    when
+        InfobipSentMessage(messageId: messageId, content.contentType == "message/interactive/buttons", content : content) from entry-point "signals"
+        MessageWithButtons(text: body.text) from content
+    then
+        drools.getEntryPoint("signals").insert(new SentMessage(messageId, text));
+end
+
+rule "Insert GPT response"
+    when
+        gptResult: GPT3Completion(bestResponse : bestResponse) from entry-point "signals"
+    then
+        drools.getEntryPoint("signals").insert(new GPTResult(bestResponse));
+end
+
+rule "Insert ChatGPT response"
+    when
+        gptResult: GPT3ChatCompletion(bestResponse : bestResponse) from entry-point "signals"
+    then
+        drools.getEntryPoint("signals").insert(new GPTResult(bestResponse));
+end

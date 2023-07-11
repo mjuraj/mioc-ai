@@ -10,6 +10,10 @@ $family-primary: "Helvetica", sans-serif;
 $primary: #286DAC;
 $family-sans-serif: 'Poppins', sans-serif;
 $family-primary: 'Poppins', sans-serif;
+.CenteredContent .Image {
+    display: grid;
+    place-items: center;
+}
 .template {
     position: relative;
 }
@@ -142,3 +146,50 @@ button:hover {
     background-color: white !important;
     color: black !important;
 }
+
+.Header {
+    height: unset !important;
+  }
+  
+.BackButton {
+align-self: center;
+}
+
+#header-image {
+height: 46px !important;
+}
+
+#header-image > img {
+max-height: unset;
+}
+
+.SubmitButton > button:focus > span {
+display: none;
+}
+
+.SubmitButton > button:focus::after {
+content: "";
+position: absolute;
+width: 24px;
+height: 24px;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+margin: auto;
+border: 4px solid transparent;
+border-top-color: #ffffff;
+border-radius: 50%;
+animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+from {
+    transform: rotate(0turn);
+}
+
+to {
+    transform: rotate(1turn);
+}
+}
+  

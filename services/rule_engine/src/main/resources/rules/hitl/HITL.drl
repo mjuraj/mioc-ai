@@ -1,0 +1,132 @@
+package rules.hitl;
+import hitl.signals.UpdateType
+import hitl.signals.UpdateChannel
+import hitl.models.HITLChannel
+import com.mindsmiths.discordAdapter.DiscordAdapterAPI
+import hitl.Settings
+import com.mindsmiths.discordAdapter.callbacks.DiscordChannelCreated
+import messages.ReceivedMessage
+import messages.SentMessage
+import messages.ButtonAnswer
+import com.mindsmiths.discordAdapter.message.DiscordReceivedMessage
+import com.mindsmiths.discordAdapter.message.DiscordButtonPressed
+import com.mindsmiths.discordAdapter.message.Message
+import agents.HITL
+import messages.HITLMessage
+import com.mindsmiths.discordAdapter.channel.TextChannel
+import com.mindsmiths.discordAdapter.callbacks.DiscordResult
+import java.util.Map
+import com.mindsmiths.discordAdapter.callbacks.DiscordCategoryCreated
+import hitl.models.ChannelType
+import signals.DiscordButtonMessageRequest
+import messages.DiscordButtonAnswer
+
+rule "Create channel"
+    when
+        signal: UpdateChannel(updateType == UpdateType.CREATE, channelType == ChannelType.TEXT_CHANNEL,
+                              channelName: channelName, categoryId: categoryId) from entry-point "signals"
+    then
+        String requestId = DiscordAdapterAPI.createGuildChannel(Settings.GUILD_ID, categoryId, channelName).getId();
+        insert(new HITLChannel(signal.getFrom(), channelName, requestId, categoryId, ChannelType.TEXT_CHANNEL));
+end
+
+rule "Channel created"
+    when
+        channel: HITLChannel(requestId: requestId, agentId: agentId, channelType == ChannelType.TEXT_CHANNEL)
+        signal: DiscordChannelCreated(replyTo.id == requestId, channelId: channelId) from entry-point "signals"
+        agent: HITL()
+    then
+        modify(channel){
+            setChannelId(channelId)
+        }
+        agent.send(agentId, signal);
+end
+
+rule "Create discord category"
+    when
+        signal: UpdateChannel(updateType == UpdateType.CREATE, channelName: channelName,
+                              channelType == ChannelType.CATEGORY) from entry-point "signals"
+    then
+        String requestId = DiscordAdapterAPI.createGuildCategory(Settings.GUILD_ID, channelName, 0).getId();
+        insert(new HITLChannel(signal.getFrom(), channelName, requestId, null, ChannelType.CATEGORY));
+end
+
+rule "Created discord category"
+    when
+        channel: HITLChannel(requestId: requestId, agentId: agentId, channelType == ChannelType.CATEGORY)
+        signal: DiscordCategoryCreated(replyTo.id == requestId, categoryId: categoryId) from entry-point "signals"
+        agent: HITL()
+    then
+        modify(channel){
+            setChannelId(categoryId)
+        }
+        agent.send(agentId, signal);
+end
+
+rule "Send button responses to channel"
+    when
+        button: ButtonAnswer(messageId: messageId, buttonText: buttonText) from entry-point "signals"
+        channel: HITLChannel(button.getFrom() == agentId, channelType == ChannelType.TEXT_CHANNEL)
+    then
+        channel.replyToMessage(messageId, buttonText);
+end
+
+rule "Send button messages to channel"
+    when
+        messageRequest: DiscordButtonMessageRequest(text: text, buttons: buttons) from entry-point "signals"
+        channel: HITLChannel(messageRequest.getFrom() == agentId, channelType == ChannelType.TEXT_CHANNEL)
+    then
+        channel.sendButtonsMessageToChannel(text, buttons);
+end
+
+rule "Send sent messages to channel"
+    when
+        message: SentMessage(messageId: messageId, text: text) from entry-point "signals"
+        channel: HITLChannel(message.getFrom() == agentId, channelType == ChannelType.TEXT_CHANNEL)
+    then
+        channel.sendMessageToChannel(message);
+end
+
+rule "Send received messages to channel"
+    when
+        message: ReceivedMessage(messageId: messageId, text: text) from entry-point "signals"
+        channel: HITLChannel(message.getFrom() == agentId, channelType == ChannelType.TEXT_CHANNEL)
+    then
+        channel.sendMessageToChannel(message);
+end
+
+rule "Send HITL response"
+    when
+        message: DiscordReceivedMessage(content: content, channelId: channel.id, channel instanceof TextChannel,
+                                        author.bot == false, discordId: discordId)
+                                        from entry-point "signals"
+        channel: HITLChannel(agentId: agentId, channelId == channelId, channelType == ChannelType.TEXT_CHANNEL)
+        agent: HITL()
+    then
+        agent.send(agentId, new HITLMessage(discordId, content));
+        delete(message);
+end
+
+rule "Register HITL message reference"
+    salience 500
+    when
+        DiscordResult(messageId: message.discordId, referenceId: replyTo.id) from entry-point "signals"
+        hitlChannel: HITLChannel(messageMapping: messageMapping, channelType == ChannelType.TEXT_CHANNEL)
+        Map.Entry(key: key, value == referenceId) from messageMapping.entrySet()
+    then
+        modify(hitlChannel){
+            messageMapping.put((String) key, messageId)
+        }
+end
+
+rule "Button pressed"
+    salience 100
+    when
+        signal: DiscordButtonPressed(button: button, message: message) from entry-point "signals"
+        Message(channelId: channel.id) from message
+        channel: HITLChannel(agentId: agentId, channelId == channelId)
+        agent: HITL()
+    then
+        agent.send(agentId, new DiscordButtonAnswer(button, message));
+        delete(signal);
+end

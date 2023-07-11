@@ -1,0 +1,247 @@
+[
+  {
+    "title": "Manager",
+    "description": "",
+    "items": [
+      {
+        "name": "Client onboarding",
+        "elements": [
+          {
+            "description": "Start onboarding message",
+            "type": "TEXT",
+            "content": "To onboard a new client, just click here: {{ onboardingUrl }}"
+          }
+        ]
+      },
+      {
+        "name": "Scheduling",
+        "elements": [
+          {
+            "description": "Logo",
+            "type": "TEXT",
+            "content": "logo.png"
+          },
+          {
+            "description": "Title",
+            "type": "TEXT",
+            "content": "Your account is successfully authenticated 🥳"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "NPS",
+    "description": "Anketa po kojoj se ocjenjuje kvaliteta škole po učenicima i ispituje se što se može poboljšati.",
+    "items": [
+      {
+        "name": "Introduction message",
+        "elements": [
+          {
+            "description": "First time",
+            "type": "TEXT",
+            "content": "Da bih znala što je super, a što baš ne štima u školi, želim čuti tvoje mišljenje! \nŠaljem ti kratku anketu!\n{{ npsUrl }}"
+          },
+          {
+            "description": "text",
+            "type": "TEXT",
+            "content": "Došlo je vrijeme da te opet zagnjavim s anketom! \nSpreman/na?\n{{ npsUrl }}"
+          }
+        ]
+      },
+      {
+        "name": "Reminder",
+        "elements": [
+          {
+            "description": "text",
+            "type": "TEXT",
+            "content": "Hejj, nisam još dobila tvoj odgovor na anketu, a tvoje mišljenje mi je ful ful bitno! \nPliz ispuni, obećajem da je kratka 😉"
+          }
+        ]
+      },
+      {
+        "name": "Thanks",
+        "elements": [
+          {
+            "description": "prompt",
+            "type": "TEXT",
+            "content": "Send a thank you message to a high school student for finishing the survey."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Onboarding",
+    "description": "",
+    "items": [
+      {
+        "name": "Intro",
+        "elements": [
+          {
+            "description": "Welcome message",
+            "type": "TEXT",
+            "content": "Bok, ja sam Moli! Super da si na wapp-u! \nOvdje me možeš pitati što god te zanima, a ja ću ti pomoći ako mogu.\nMožeš početi sa porukom \"Moli\"! 😉"
+          },
+          {
+            "description": "Welcome old user",
+            "type": "TEXT",
+            "content": "Bok! Super da si na wapp-u! Mail komunikacija je koma 🙄\nOvdje me možeš pitati što god te zanima, a ja ću ti pomoći ako mogu.\nMožeš početi sa porukom \"Moli\"! 😉"
+          }
+        ]
+      },
+      {
+        "name": "Managing",
+        "elements": [
+          {
+            "description": "Prompt changed",
+            "type": "TEXT",
+            "content": "Prompt set to {{ configId }} "
+          },
+          {
+            "description": "Prompt not found",
+            "type": "TEXT",
+            "content": "Prompt {{ configId }} not found. Choose one of the available prompts by writing \"prompt \" followed by available prompt ids: {{ promptList }}"
+          },
+          {
+            "description": "Reset",
+            "type": "TEXT",
+            "content": "Conversation reset"
+          },
+          {
+            "description": "Send prompt ids",
+            "type": "TEXT",
+            "content": "Choose a new prompt by writing \"prompt\" and one of ids from the list: {{ promptList }} "
+          },
+          {
+            "description": "Unknown user",
+            "type": "TEXT",
+            "content": "Sorry, I don't know who you are. Please register first."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Power menu",
+    "description": "",
+    "items": [
+      {
+        "name": "About Policy",
+        "elements": [
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "Posjeti web-stranicu škole https://mioc.hr ili me pitaj bilo što vezano uz školu. Ja ću ti pokušati pomoći tako da ti u školi bude 🔝!"
+          }
+        ]
+      },
+      {
+        "name": "App",
+        "elements": [
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "Ovdje se nalazi link za anketu: {{ url }}"
+          }
+        ]
+      },
+      {
+        "name": "Power menu",
+        "elements": [
+          {
+            "description": "Options",
+            "type": "OPTIONS",
+            "content": "[{\"text\":\"O školi\",\"id\":\"about-policy\"},{\"text\":\"Aktivnosti u školi\",\"id\":\"school-activities\"},{\"text\":\"Razgovor s osobljem\",\"id\":\"talk-to-personnel\"}]"
+          },
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "Kako ti mogu pomoći? 😊"
+          }
+        ]
+      },
+      {
+        "name": "Scheduling",
+        "elements": [
+          {
+            "description": "Scheduled",
+            "type": "TEXT",
+            "content": "Success! Meeting with {{ managerFirstName }} scheduled on {{ time }}"
+          },
+          {
+            "description": "Text",
+            "type": "TEXT",
+            "content": "I got you! Let's schedule you a call with {{ managerFirstName }} 😊"
+          },
+          {
+            "description": "Title",
+            "type": "TEXT",
+            "content": "Pick time for a call"
+          }
+        ]
+      },
+      {
+        "name": "Talk to personnel",
+        "elements": [
+          {
+            "description": "text",
+            "type": "TEXT",
+            "content": "Svo stručno osoblje u školi uvijek je dostupno za razgovor. Možeš se obratiti psihologicama u plavom hodniku za pomoć ili referentu na ulazu kod zbornice. :D"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Prompts",
+    "description": "",
+    "items": [
+      {
+        "name": "Custom responses",
+        "elements": [
+          {
+            "description": "Answer unknown",
+            "type": "TEXT",
+            "content": "Hmm, ne znam puno o tome."
+          },
+          {
+            "description": "Answer unknown 2",
+            "type": "TEXT",
+            "content": "Ne mogu ti pomoći s tim."
+          },
+          {
+            "description": "Answer unknown 3",
+            "type": "TEXT",
+            "content": "Ne znam kako ti odgovoriti."
+          }
+        ]
+      },
+      {
+        "name": "Prompt elements",
+        "elements": [
+          {
+            "description": "Context EN",
+            "type": "TEXT",
+            "content": "Context"
+          },
+          {
+            "description": "Context HR",
+            "type": "TEXT",
+            "content": "Kontekst"
+          },
+          {
+            "description": "Punctuation EN",
+            "type": "TEXT",
+            "content": "Finish messages in punctuation marks."
+          },
+          {
+            "description": "Punctuation HR",
+            "type": "TEXT",
+            "content": "Završavaj poruke interpunkcijskim znakovima."
+          }
+        ]
+      }
+    ]
+  }
+]

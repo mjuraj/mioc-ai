@@ -1,0 +1,134 @@
+package rules.onboardingAgent;
+
+import com.mindsmiths.ruleEngine.model.Initialize;
+import com.mindsmiths.armory.event.UserConnected;
+import com.mindsmiths.armory.event.UserDisconnected;
+import com.mindsmiths.armory.event.Submit;
+import com.mindsmiths.ruleEngine.util.Agents;
+import agents.OnboardingAgent;
+import agents.ClientAgent;
+
+rule "Show Onboarding flow"
+    when
+        signal: UserConnected() from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        agent.showOnboardingFlow();
+        delete(signal);
+end
+
+rule "Goodbye world"
+    when
+        signal: UserDisconnected() from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        Agents.deleteAgent(agent, false);
+end
+
+rule "Onboarding phone number received"
+    when
+        signal: Submit(buttonId == "numberSubmit", screenId == "askForWapp") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setPhoneNumber(signal.getParamAsString("telephone"))
+        };
+        delete(signal);
+end
+
+rule "User submits their name"
+    when
+        signal: Submit(screenId == "askForName") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setName(signal.getParamAsString("name"))
+        };
+        delete(signal);
+end
+
+// User clicked on "Miočanin" on screen "askForGender"
+rule "Male gender"
+    when
+        signal: Submit(buttonId == "askForGenderStartedm", screenId == "askForGender") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setGender("M")
+        };
+        delete(signal);
+end
+
+// User clicked on "Miočanka" on screen "askForGender"
+rule "Female gender"
+    when
+        signal: Submit(buttonId == "askForGenderStartedf", screenId == "askForGender") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setGender("F")
+        };
+        delete(signal);
+end
+
+// User clicked on "Prvi" on screen "askForAge"
+rule "1st year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted1", screenId == "askForAge") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setAge(1)
+        };
+        delete(signal);
+end
+
+// User clicked on "Drugi" on screen "askForAge"
+rule "2nd year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted2", screenId == "askForAge") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setAge(2)
+        };
+        delete(signal);
+end
+
+// User clicked on "Treći" on screen "askForAge"
+rule "3rd year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted3", screenId == "askForAge") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setAge(3)
+        };
+        delete(signal);
+end
+
+// User clicked on "Četvrti" on screen "askForAge"
+rule "4th year"
+    when
+        signal: Submit(buttonId == "askForAgeStarted4", screenId == "askForAge") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        modify(agent) {
+            setAge(4)
+        };
+        delete(signal);
+end
+
+rule "User submits their class letter"
+    when
+        signal: Submit(screenId == "askForClassLetter") from entry-point "signals"
+        agent: OnboardingAgent()
+    then
+        String letter = signal.getParamAsList("classLetter", String.class).get(0);
+        modify(agent) {
+            setClassLetter(letter)
+        };
+        Agents.createAgent(new ClientAgent(agent.getName(), agent.getPhoneNumber(), agent.getAge(), agent.getGender(), letter));
+        Agents.deleteAgent(agent, false);
+        delete(signal);
+end

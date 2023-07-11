@@ -1,0 +1,52 @@
+package rules.clientAgent;
+
+import com.mindsmiths.sdk.core.db.Database;
+import com.mindsmiths.dashboard.models.Client;
+import com.mindsmiths.ruleEngine.model.Initialize;
+import com.mindsmiths.ruleEngine.util.Log;
+import com.mindsmiths.dashboard.DashboardAPI;
+import com.mindsmiths.mitems.Mitems;
+
+import agents.ClientAgent;
+import messages.ReceivedMessage;
+import messages.GPTResult;
+
+
+rule "Register client if client doesn't exist"
+    when
+        signal: Initialize() from entry-point "signals"
+        agent: ClientAgent(phone: getConnection("phone"), !hasConnection("dashboardId"), client: client)
+    then
+        DashboardAPI.updateOrCreateClient(client);
+        delete(signal);
+end
+
+rule "Introduce agent to a new user when ready"
+    when
+        agent: ClientAgent(
+            introducedToClient == false, 
+            hasConnection("dashboardId"),
+            !hasConnection("email"), 
+            phone: getConnection("phone"),
+            client: client)
+    then
+        modify(agent) {
+            setIntroducedToClient(true),
+            sendMessage(Mitems.getText("onboarding.intro.welcome-message"), false)
+        };
+end
+
+rule "Introduce agent to an old user when ready"
+    when
+        agent: ClientAgent(
+            introducedToClient == false, 
+            hasConnection("dashboardId"),
+            hasConnection("email"), 
+            phone: getConnection("phone"),
+            client: client)
+    then
+        modify(agent) {
+            setIntroducedToClient(true),
+            sendMessage(Mitems.getText("onboarding.intro.welcome-old-user"), false)
+        };
+end

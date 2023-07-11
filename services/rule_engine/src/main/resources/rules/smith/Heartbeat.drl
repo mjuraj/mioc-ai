@@ -3,7 +3,6 @@ package rules.smith;
 import agents.Smith;
 import signals.AddReview;
 import signals.RequestSummary;
-import signals.NewEmailEntry;
 import config.Settings;
 
 import com.mindsmiths.ruleEngine.model.Heartbeat;
@@ -15,7 +14,6 @@ import com.mindsmiths.gsheetsAdapter.reply.Spreadsheet
 
 import java.time.ZoneId;
 
-// Connecting to google spreadsheet
 rule "Get Google Sheets"
     when
         Heartbeat(now: timestamp) from entry-point "signals"
@@ -67,15 +65,6 @@ rule "Add Review"
         signal: AddReview() from entry-point "signals"
         agent: Smith()
     then
-        agent.addReviewToSheet(signal.getEmail(), signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback(), signal.getTimestamp().atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli());
-        delete(signal);
-end
-
-rule "Create a new email entry"
-    when
-        signal: NewEmailEntry() from entry-point "signals"
-        agent: Smith()
-    then
-        agent.addNewEmail(signal.getEmail());
+        agent.addReviewToSheet(signal.getGender(), signal.getAge(), signal.getRating(), signal.getFeedback(), signal.getTimestamp().atZone(ZoneId.of(Settings.DEFAULT_TIME_ZONE)).toInstant().toEpochMilli());
         delete(signal);
 end
